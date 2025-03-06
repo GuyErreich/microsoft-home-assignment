@@ -1,15 +1,15 @@
 trigger:
   branches:
     include:
-      - main  # Trigger pipeline on main branch commits
+      - main
 
 pr: 
   branches:
     include:
-      - main  # Run the pipeline on pull requests to main
+      - main
 
 pool:
-  name: SelfHostedPool  # Use your self-hosted agent
+  name: SelfHostedPool
 
 variables:
   resourceGroupName: "myResourceGroup"
@@ -26,7 +26,7 @@ stages:
     - task: AzureCLI@2
       displayName: "Login to Azure"
       inputs:
-        azureSubscription: "AzureServiceConnection"
+        azureSubscription: "myARMConnection"
         scriptType: "bash"
         scriptLocation: "inlineScript"
         inlineScript: |
@@ -35,7 +35,7 @@ stages:
     - task: AzureCLI@2
       displayName: "Create Resource Group"
       inputs:
-        azureSubscription: "AzureServiceConnection"
+        azureSubscription: "myARMConnection"
         scriptType: "bash"
         scriptLocation: "inlineScript"
         inlineScript: |
@@ -44,7 +44,7 @@ stages:
     - task: AzureCLI@2
       displayName: "Deploy Storage Accounts"
       inputs:
-        azureSubscription: "AzureServiceConnection"
+        azureSubscription: "myARMConnection"
         scriptType: "bash"
         scriptLocation: "inlineScript"
         inlineScript: |
@@ -53,7 +53,7 @@ stages:
     - task: AzureCLI@2
       displayName: "Deploy Linux VM"
       inputs:
-        azureSubscription: "AzureServiceConnection"
+        azureSubscription: "myARMConnection"
         scriptType: "bash"
         scriptLocation: "inlineScript"
         inlineScript: |
