@@ -16,12 +16,6 @@
         "description": "Administrator username for the VM."
       }
     },
-    "sshPublicKey": {
-      "type": "string",
-      "metadata": {
-        "description": "SSH Public Key for secure access."
-      }
-    },
     "location": {
       "type": "string",
       "defaultValue": "eastus",
@@ -139,15 +133,7 @@
           "computerName": "[parameters('vmName')]",
           "adminUsername": "[parameters('adminUsername')]",
           "linuxConfiguration": {
-            "disablePasswordAuthentication": true,
-            "ssh": {
-              "publicKeys": [
-                {
-                  "path": "/home/azureuser/.ssh/authorized_keys",
-                  "keyData": "[parameters('sshPublicKey')]"
-                }
-              ]
-            }
+            "disablePasswordAuthentication": true
           }
         },
         "storageProfile": {
