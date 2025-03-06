@@ -1,0 +1,159 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+      "vmName": {
+        "type": "string",
+        "defaultValue": "myLinuxVM",
+        "metadata": {
+          "description": "The name of the Linux virtual machine."
+        }
+      },
+      "adminUsername": {
+        "type": "string",
+        "defaultValue": "azureuser",
+        "metadata": {
+          "description": "Administrator username for the VM."
+        }
+      },
+      "sshPublicKey": {
+        "type": "string",
+        "metadata": {
+          "description": "SSH Public Key for secure access."
+        }
+      },
+      "location": {
+        "type": "string",
+        "defaultValue": "eastus",
+        "metadata": {
+          "description": "Azure region where the VM will be deployed."
+        }
+      },
+      "vmSize": {
+        "type": "string",
+        "defaultValue": "Standard_B1s",
+        "metadata": {
+          "description": "Size of the VM instance."
+        }
+      }
+    },
+    "resources": [
+      {
+        "type": "Microsoft.Network/virtualNetworks",
+        "apiVersion": "2022-01-01",
+        "name": "[concat(parameters('vmName'), '-vnet')]",
+        "location": "[parameters('location')]",
+        "properties": {
+          "addressSpace": {
+            "addressPrefixes": ["10.0.0.0/16"]
+          },
+          "subnets": [
+            {
+              "name": "default",
+              "properties": {
+                "addressPrefix": "10.0.0.0/24"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "type": "Microsoft.Network/networkSecurityGroups",
+        "apiVersion": "2022-01-01",
+        "name": "[concat(parameters('vmName'), '-nsg')]",
+        "location": "[parameters('location')]",
+        "properties": {
+          "securityRules": [
+            {
+              "name": "AllowSSH",
+              "properties": {
+                "protocol": "Tcp",
+                "sourcePortRange": "*",
+                "destinationPortRange": "22",
+                "sourceAddressPrefix": "*",
+                "destinationAddressPrefix": "*",
+                "access": "Allow",
+                "priority": 1000,
+                "direction": "Inbound"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "type": "Microsoft.Network/publicIPAddresses",
+        "apiVersion": "2022-01-01",
+        "name": "[concat(parameters('vmName'), '-publicIP')]",
+        "location": "[parameters('location')]",
+        "properties": {
+          "publicIPAllocationMethod": "Dynamic"
+        }
+      },
+      {
+        "type": "Microsoft.Network/networkInterfaces",
+        "apiVersion": "2022-01-01",
+        "name": "[concat(parameters('vmName'), '-nic')]",
+        "location": "[parameters('location')]",
+        "properties": {
+          "ipConfigurations": [
+            {
+              "name": "ipconfig1",
+              "properties": {
+                "subnet": {
+                  "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', concat(parameters('vmName'), '-vnet'), 'default')]"
+                },
+                "publicIPAddress": {
+                  "id": "[resourceId('Microsoft.Network/publicIPAddresses', concat(parameters('vmName'), '-publicIP'))]"
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "type": "Microsoft.Compute/virtualMachines",
+        "apiVersion": "2022-01-01",
+        "name": "[parameters('vmName')]",
+        "location": "[parameters('location')]",
+        "properties": {
+          "hardwareProfile": {
+            "vmSize": "[parameters('vmSize')]"
+          },
+          "osProfile": {
+            "computerName": "[parameters('vmName')]",
+            "adminUsername": "[parameters('adminUsername')]",
+            "linuxConfiguration": {
+              "disablePasswordAuthentication": true,
+              "ssh": {
+                "publicKeys": [
+                  {
+                    "path": "/home/azureuser/.ssh/authorized_keys",
+                    "keyData": "[parameters('sshPublicKey')]"
+                  }
+                ]
+              }
+            }
+          },
+          "storageProfile": {
+            "imageReference": {
+              "publisher": "Canonical",
+              "offer": "UbuntuServer",
+              "sku": "20_04-lts-gen2",
+              "version": "latest"
+            },
+            "osDisk": {
+              "createOption": "FromImage"
+            }
+          },
+          "networkProfile": {
+            "networkInterfaces": [
+              {
+                "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(parameters('vmName'), '-nic'))]"
+              }
+            ]
+          }
+        }
+      }
+    ]
+  }
+  

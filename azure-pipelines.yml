@@ -1,0 +1,60 @@
+trigger:
+  branches:
+    include:
+      - main  # Trigger pipeline on main branch commits
+
+pr: 
+  branches:
+    include:
+      - main  # Run the pipeline on pull requests to main
+
+pool:
+  name: SelfHostedPool  # Use your self-hosted agent
+
+variables:
+  resourceGroupName: "myResourceGroup"
+  location: "eastus"
+
+stages:
+- stage: Deploy_Infra
+  displayName: "Deploy Storage Accounts & Linux VM"
+  jobs:
+  - job: Deploy_Azure_Infra
+    displayName: "Deploy ARM Templates"
+    steps:
+    
+    - task: AzureCLI@2
+      displayName: "Login to Azure"
+      inputs:
+        azureSubscription: "AzureServiceConnection"
+        scriptType: "bash"
+        scriptLocation: "inlineScript"
+        inlineScript: |
+          az login --identity || az login --use-device-code
+
+    - task: AzureCLI@2
+      displayName: "Create Resource Group"
+      inputs:
+        azureSubscription: "AzureServiceConnection"
+        scriptType: "bash"
+        scriptLocation: "inlineScript"
+        inlineScript: |
+          az group create --name $(resourceGroupName) --location $(location)
+
+    - task: AzureCLI@2
+      displayName: "Deploy Storage Accounts"
+      inputs:
+        azureSubscription: "AzureServiceConnection"
+        scriptType: "bash"
+        scriptLocation: "inlineScript"
+        inlineScript: |
+          az deployment group create --resource-group $(resourceGroupName) --template-file azure-templates/storageAccounts.json
+
+    - task: AzureCLI@2
+      displayName: "Deploy Linux VM"
+      inputs:
+        azureSubscription: "AzureServiceConnection"
+        scriptType: "bash"
+        scriptLocation: "inlineScript"
+        inlineScript: |
+          az deployment group create --resource-group $(resourceGroupName) --template-file azure-templates/vmTemplate.json --parameters sshPublicKey="$(cat ~/.ssh/id_rsa.pub)"

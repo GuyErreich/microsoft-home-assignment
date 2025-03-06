@@ -1,0 +1,44 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+      "storageAccountPrefix": {
+        "type": "string",
+        "defaultValue": "mynewstorage",
+        "metadata": {
+          "description": "Prefix for the storage account names. Must be globally unique."
+        }
+      },
+      "location": {
+        "type": "string",
+        "defaultValue": "eastus",
+        "metadata": {
+          "description": "Azure region for the storage accounts."
+        }
+      }
+    },
+    "resources": [
+      {
+        "type": "Microsoft.Storage/storageAccounts",
+        "apiVersion": "2022-09-01",
+        "name": "[concat(parameters('storageAccountPrefix'), 'sa1')]",
+        "location": "[parameters('location')]",
+        "sku": {
+          "name": "Standard_LRS"
+        },
+        "kind": "StorageV2",
+        "properties": {}
+      },
+      {
+        "type": "Microsoft.Storage/storageAccounts",
+        "apiVersion": "2022-09-01",
+        "name": "[concat(parameters('storageAccountPrefix'), 'sa2')]",
+        "location": "[parameters('location')]",
+        "sku": {
+          "name": "Standard_LRS"
+        },
+        "kind": "StorageV2",
+        "properties": {}
+      }
+    ]
+  }
