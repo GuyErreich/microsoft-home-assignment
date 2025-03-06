@@ -20,7 +20,7 @@
     "resources": [
       {
         "type": "Microsoft.Storage/storageAccounts",
-        "apiVersion": "2022-09-01",
+        "apiVersion": "2023-05-01",
         "name": "[concat(parameters('storageAccountPrefix'), 'sa1')]",
         "location": "[parameters('location')]",
         "sku": {
@@ -31,7 +31,7 @@
       },
       {
         "type": "Microsoft.Storage/storageAccounts",
-        "apiVersion": "2022-09-01",
+        "apiVersion": "2023-05-01",
         "name": "[concat(parameters('storageAccountPrefix'), 'sa2')]",
         "location": "[parameters('location')]",
         "sku": {
