@@ -50,4 +50,3 @@ stages:
         templateLocation: 'Linked artifact'
         csmFile: 'myLinuxVM.json'
         deploymentMode: 'Incremental'
-        overrideParameters: "- sshPublicKey $(cat ~/.ssh/id_rsa.pub)"
