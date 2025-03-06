@@ -48,8 +48,8 @@ stages:
         azureResourceManagerConnection: 'myARMConnection'
         subscriptionId: '938d8cb0-7326-4b21-82ac-a9a5017a87ea'
         action: 'Create Or Update Resource Group'
-        resourceGroupName: $(resourceGroupName)'
-        location: '$(location)'
+        resourceGroupName: $(resourceGroupName)
+        location: $(location)
         templateLocation: 'Linked artifact'
         csmFile: 'storageAccounts.json'
         deploymentMode: 'Incremental'
