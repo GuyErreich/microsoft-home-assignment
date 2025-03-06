@@ -16,6 +16,12 @@
         "description": "Administrator username for the VM."
       }
     },
+    "sshPublicKey": {
+      "type": "string",
+      "metadata": {
+        "description": "SSH public key for the VM."
+      }
+    },
     "location": {
       "type": "string",
       "defaultValue": "eastus",
@@ -59,15 +65,15 @@
       "properties": {
         "securityRules": [
           {
-            "name": "DenyAllInbound",
+            "name": "AllowSSH",
             "properties": {
-              "protocol": "*",
+              "protocol": "Tcp",
               "sourcePortRange": "*",
-              "destinationPortRange": "*",
-              "sourceAddressPrefix": "*",
+              "destinationPortRange": "22",
+              "sourceAddressPrefix": "*",  
               "destinationAddressPrefix": "*",
-              "access": "Deny",
-              "priority": 100,
+              "access": "Allow",
+              "priority": 1000,
               "direction": "Inbound"
             }
           },
@@ -133,7 +139,15 @@
           "computerName": "[parameters('vmName')]",
           "adminUsername": "[parameters('adminUsername')]",
           "linuxConfiguration": {
-            "disablePasswordAuthentication": true
+            "disablePasswordAuthentication": true, 
+            "ssh": {
+              "publicKeys": [
+                {
+                  "path": "/home/azureuser/.ssh/authorized_keys",
+                  "keyData": "[parameters('sshPublicKey')]"
+                }
+              ]
+            }
           }
         },
         "storageProfile": {

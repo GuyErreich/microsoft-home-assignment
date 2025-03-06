@@ -3,11 +3,6 @@ trigger:
     include:
       - master
 
-pr: 
-  branches:
-    include:
-      - master
-
 pool:
   name: MySelfHostedPool
 
@@ -16,8 +11,42 @@ variables:
   serviceConnection: "myARMConnection"
   subscriptionId: "938d8cb0-7326-4b21-82ac-a9a5017a87ea"
   location: "East US"
+  sshKeyPath: "$(Build.ArtifactStagingDirectory)/id_rsa"
+  keyVaultName: "myKeyVault"
+  # secretName: "SSHPrivateKey" # Might use it later
 
 stages:
+- stage: Generate_SSH_Key
+  displayName: "Generate SSH Key"
+  jobs:
+  - job: GenerateKey
+    displayName: "Generate SSH Key and Store Public Key"
+    steps:
+    - script: |
+        ssh-keygen -t rsa -b 2048 -f $(sshKeyPath) -N "" -q
+        cat $(sshKeyPath).pub
+      displayName: "Generate SSH Key"
+
+    - task: AzureResourceManagerTemplateDeployment@3
+      displayName: Deploy Storage Accounts
+      inputs:
+        deploymentScope: 'Resource Group'
+        azureResourceManagerConnection: $(serviceConnection)
+        subscriptionId: $(subscriptionId)
+        action: 'Create Or Update Resource Group'
+        resourceGroupName: $(resourceGroupName)
+        location: $(location)
+        templateLocation: 'Linked artifact'
+        csmFile: 'keyVault.json'
+        deploymentMode: 'Incremental'
+        overrideParameters: '-keyVaultName $(keyVaultName) -sshPrivateKeyPath $(sshKeyPath)'
+
+    - script: |
+        sshPubKey=$(cat $(sshKeyPath).pub)
+        echo "##vso[task.setvariable variable=sshPublicKey;isOutput=true]$sshPubKey"
+      displayName: "Store SSH Public Key as Pipeline Variable"
+      name: storeKey
+
 - stage: Deploy_Infra
   displayName: "Deploy Storage Accounts & Linux VM"
   jobs:
@@ -50,3 +79,5 @@ stages:
         templateLocation: 'Linked artifact'
         csmFile: 'myLinuxVM.json'
         deploymentMode: 'Incremental'
+        overrideParameters: '-sshPublicKey $(Generate_SSH_Key.storeKey.outputs["sshPublicKey"])'
+
