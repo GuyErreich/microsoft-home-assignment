@@ -9,11 +9,11 @@ pr:
       - main
 
 pool:
-  name: SelfHostedPool
+  name: MySelfHostedPool
 
 variables:
   resourceGroupName: "myResourceGroup"
-  location: "eastus"
+  location: "East US"
 
 stages:
 - stage: Deploy_Infra
@@ -23,38 +23,43 @@ stages:
     displayName: "Deploy ARM Templates"
     steps:
     
-    - task: AzureCLI@2
-      displayName: "Login to Azure"
-      inputs:
-        azureSubscription: "myARMConnection"
-        scriptType: "bash"
-        scriptLocation: "inlineScript"
-        inlineScript: |
-          az login --identity || az login --use-device-code
+    # - task: AzureCLI@2
+    #   displayName: "Login to Azure"
+    #   inputs:
+    #     azureSubscription: "myARMConnection"
+    #     scriptType: "bash"
+    #     scriptLocation: "inlineScript"
+    #     inlineScript: |
+    #       az login --identity || az login --use-device-code
 
-    - task: AzureCLI@2
-      displayName: "Create Resource Group"
-      inputs:
-        azureSubscription: "myARMConnection"
-        scriptType: "bash"
-        scriptLocation: "inlineScript"
-        inlineScript: |
-          az group create --name $(resourceGroupName) --location $(location)
+    # - task: AzureCLI@2
+    #   displayName: "Create Resource Group"
+    #   inputs:
+    #     azureSubscription: "myARMConnection"
+    #     scriptType: "bash"
+    #     scriptLocation: "inlineScript"
+    #     inlineScript: |
+    #       az group create --name $(resourceGroupName) --location $(location)
 
-    - task: AzureCLI@2
-      displayName: "Deploy Storage Accounts"
+    - task: AzureResourceManagerTemplateDeployment@3
+      displayName: Deploy Storage Accounts
       inputs:
-        azureSubscription: "myARMConnection"
-        scriptType: "bash"
-        scriptLocation: "inlineScript"
-        inlineScript: |
-          az deployment group create --resource-group $(resourceGroupName) --template-file azure-templates/storageAccounts.json
+        deploymentScope: 'Resource Group'
+        azureResourceManagerConnection: 'myARMConnection'
+        subscriptionId: '938d8cb0-7326-4b21-82ac-a9a5017a87ea'
+        action: 'Create Or Update Resource Group'
+        # resourceGroupName: 'myResourceGroup'
+        location: '$(location)'
+        templateLocation: 'Linked artifact'
+        csmFile: 'storageAccounts.json'
+        deploymentMode: 'Incremental'
+        deploymentName: '$(resourceGroupName)'
 
-    - task: AzureCLI@2
-      displayName: "Deploy Linux VM"
-      inputs:
-        azureSubscription: "myARMConnection"
-        scriptType: "bash"
-        scriptLocation: "inlineScript"
-        inlineScript: |
-          az deployment group create --resource-group $(resourceGroupName) --template-file azure-templates/vmTemplate.json --parameters sshPublicKey="$(cat ~/.ssh/id_rsa.pub)"
+    # - task: AzureCLI@2
+    #   displayName: "Deploy Linux VM"
+    #   inputs:
+    #     azureSubscription: "myARMConnection"
+    #     scriptType: "bash"
+    #     scriptLocation: "inlineScript"
+    #     inlineScript: |
+    #       az deployment group create --resource-group $(resourceGroupName) --template-file azure-templates/vmTemplate.json --parameters sshPublicKey="$(cat ~/.ssh/id_rsa.pub)"
