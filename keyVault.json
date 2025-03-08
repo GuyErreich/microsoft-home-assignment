@@ -15,10 +15,10 @@
         "description": "Azure region for the Key Vault."
       }
     },
-    "sshPrivateKeyPath": {
+    "adminObjectId": {
       "type": "string",
       "metadata": {
-        "description": "The SSH private key to store as a secret."
+        "description": "The Azure Active Directory (AAD) Object ID of the admin user."
       }
     }
   },
@@ -37,15 +37,40 @@
       }
     },
     {
-      "type": "Microsoft.KeyVault/vaults/secrets",
+      "type": "Microsoft.KeyVault/vaults/accessPolicies",
       "apiVersion": "2023-07-01",
-      "name": "[concat(parameters('keyVaultName'), '/SSHPrivateKey')]",
+      "name": "[concat(parameters('keyVaultName'), '/accessPolicies')]",
       "dependsOn": [
         "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]"
       ],
       "properties": {
-        "value": "[parameters('sshPrivateKeyPath')]",
-        "contentType": "application/x-pem-file"
+        "accessPolicies": [
+          {
+            "objectId": "[parameters('adminObjectId')]",
+            "tenantId": "[subscription().tenantId]",
+            "permissions": {
+              "keys": ["get", "list", "create", "delete", "update", "import", "backup", "restore", "recover", "purge"],
+              "secrets": ["get", "list", "set", "delete", "recover", "backup", "restore"],
+              "certificates": ["get", "list", "create", "delete", "update", "import", "backup", "restore", "recover"],
+              "storage": ["get", "list", "set", "delete", "update", "backup", "restore", "recover"]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.KeyVault/vaults/keys",
+      "apiVersion": "2023-07-01",
+      "name": "[concat(parameters('keyVaultName'), '/SSHPrivateKey')]",
+      "location": "[parameters('location')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]"
+      ],
+      "properties": {
+
+        "kty": "RSA",
+        "keySize": 2048,
+        "keyOps": ["sign", "verify"]
       }
     }
   ]

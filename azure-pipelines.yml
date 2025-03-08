@@ -13,7 +13,7 @@ variables:
   location: "East US"
   sshKeyPath: "$(Build.ArtifactStagingDirectory)/id_rsa"
   keyVaultName: "myPresonalKeyVault"
-  # secretName: "SSHPrivateKey" # Might use it later
+  vaultAdmin: "Guy Erreich"
 
 stages:
 - stage: Generate_SSH_Key
@@ -27,6 +27,17 @@ stages:
         cat $(sshKeyPath).pub
       displayName: "Generate SSH Key"
 
+    - task: AzureCLI@2
+      displayName: "Get User Object ID"
+      name: getAdminObjectID
+      inputs:
+        azureSubscription: $(serviceConnection)
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+          userId=$(az ad user list --display-name "$(vaultAdmin)" --query "[].id" --output tsv)
+          echo "##vso[task.setvariable variable=adminObjectID;isOutput=true;isSecret=true]$userId"
+
     - task: AzureResourceManagerTemplateDeployment@3
       displayName: Deploy Storage Accounts
       inputs:
@@ -39,7 +50,7 @@ stages:
         templateLocation: 'Linked artifact'
         csmFile: 'keyVault.json'
         deploymentMode: 'Incremental'
-        overrideParameters: '-keyVaultName $(keyVaultName) -sshPrivateKeyPath $(sshKeyPath)'
+        overrideParameters: '-keyVaultName $(keyVaultName) -adminObjectID $(getAdminObjectID.adminObjectID)'
 
     - script: |
         sshPubKey=$(cat $(sshKeyPath).pub)
