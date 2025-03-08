@@ -44,6 +44,7 @@ stages:
   
     - script: |
         vmName=$(echo "myLinuxVM$(date +"%d-%m-%Y-%H-%M-%S")")
+        echo "vmName=$vmName"
         echo "##vso[task.setvariable variable=vmName;isOutput=true]$vmName"
       displayName: "Generate VM Name"
       name: generateVMName
