@@ -34,13 +34,6 @@
         "description": "The name of the virtual network."
       }
     },
-    "publicIPName": {
-      "type": "string",
-      "defaultValue": "my-public-ip",
-      "metadata": {
-        "description": "The name of the public IP address."
-      }
-    },
     "securityGroupName": {
       "type": "string",
       "defaultValue": "my-nsg",
@@ -60,6 +53,12 @@
       "defaultValue": "azureuser",
       "metadata": {
         "description": "Administrator username for the VM."
+      }
+    },
+    "sshPublicKey": {
+      "type": "string",
+      "metadata": {
+        "description": "SSH public key for the VM."
       }
     },
     "location": {
