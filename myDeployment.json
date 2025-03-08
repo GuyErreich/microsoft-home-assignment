@@ -27,6 +27,34 @@
         "description": "Prefix for the storage account names. Must be globally unique."
       }
     },
+    "vnetName": {
+      "type": "string",
+      "defaultValue": "my-vnet",
+      "metadata": {
+        "description": "The name of the virtual network."
+      }
+    },
+    "publicIPName": {
+      "type": "string",
+      "defaultValue": "my-public-ip",
+      "metadata": {
+        "description": "The name of the public IP address."
+      }
+    },
+    "securityGroupName": {
+      "type": "string",
+      "defaultValue": "my-nsg",
+      "metadata": {
+        "description": "The name of the network security group."
+      }
+    },
+    "networkInterfaceName": {
+      "type": "string",
+      "defaultValue": "my-nic",
+      "metadata": {
+        "description": "The name of the network interface."
+      }
+    },
     "vmName": {
       "type": "string",
       "defaultValue": "myLinuxVM",
@@ -145,7 +173,7 @@
     {
       "type": "Microsoft.Network/virtualNetworks",
       "apiVersion": "2024-05-01",
-      "name": "[concat(parameters('vmName'), '-vnet')]",
+      "name": "[parameters('vnetName')]",
       "location": "[parameters('location')]",
       "properties": {
         "addressSpace": {
@@ -164,7 +192,7 @@
     {
       "type": "Microsoft.Network/networkSecurityGroups",
       "apiVersion": "2024-05-01",
-      "name": "[concat(parameters('vmName'), '-nsg')]",
+      "name": "[parameters('securityGroupName')]",
       "location": "[parameters('location')]",
       "properties": {
         "securityRules": [
@@ -200,7 +228,7 @@
     {
       "type": "Microsoft.Network/publicIPAddresses",
       "apiVersion": "2024-05-01",
-      "name": "[concat(parameters('vmName'), '-publicIP')]",
+      "name": "[parameters('publicIPName')]",
       "location": "[parameters('location')]",
       "properties": {
         "publicIPAllocationMethod": "Dynamic"
@@ -209,24 +237,29 @@
     {
       "type": "Microsoft.Network/networkInterfaces",
       "apiVersion": "2024-05-01",
-      "name": "[concat(parameters('vmName'), '-nic')]",
+      "name": "[parameters('networkInterfaceName')]",
       "location": "[parameters('location')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/virtualNetworks', parameters('vnetName'))]",
+        "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIPName'))]",
+        "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('securityGroupName'))]"
+      ],
       "properties": {
         "ipConfigurations": [
           {
             "name": "ipconfig1",
             "properties": {
               "subnet": {
-                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', concat(parameters('vmName'), '-vnet'), 'default')]"
+                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), 'default')]"
               },
               "publicIPAddress": {
-                "id": "[resourceId('Microsoft.Network/publicIPAddresses', concat(parameters('vmName'), '-publicIP'))]"
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIPName'))]"
               }
             }
           }
         ],
         "networkSecurityGroup": {
-          "id": "[resourceId('Microsoft.Network/networkSecurityGroups', concat(parameters('vmName'), '-nsg'))]"
+          "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('securityGroupName'))]"
         }
       }
     },
@@ -235,6 +268,9 @@
       "apiVersion": "2024-07-01",
       "name": "[parameters('vmName')]",
       "location": "[parameters('location')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/networkInterfaces', parameters('networkInterfaceName'))]"
+      ],
       "properties": {
         "hardwareProfile": {
           "vmSize": "[parameters('vmSize')]"
@@ -268,7 +304,7 @@
         "networkProfile": {
           "networkInterfaces": [
             {
-              "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(parameters('vmName'), '-nic'))]"
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', parameters('networkInterfaceName'))]"
             }
           ]
         }
