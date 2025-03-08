@@ -78,12 +78,7 @@ stages:
         location: $(location)
         templateLocation: 'Linked artifact'
         csmFile: 'storageAccounts.json'
-        deploymentMode: 'Incremental'
-
-
-    - script: |
-        echo "SSH Key: $(SSH_PUBLIC_KEY)"
-      displayName: "print ssh key"
+        deploymentMode: 'Complete'
 
     - task: AzureResourceManagerTemplateDeployment@3
       displayName: Deploy Linux Machine
