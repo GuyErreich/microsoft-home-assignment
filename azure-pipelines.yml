@@ -87,5 +87,5 @@ stages:
         templateLocation: 'Linked artifact'
         csmFile: 'myLinuxVM.json'
         deploymentMode: 'Incremental'
-        overrideParameters: '-sshPublicKey $(SSH_PUBLIC_KEY)'
+        overrideParameters: '-sshPublicKey "$(SSH_PUBLIC_KEY)"'
 
