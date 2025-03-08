@@ -22,18 +22,18 @@ stages:
   - job: GenerateKey
     displayName: "Generate SSH Key and Store Public Key"
     steps:
-    - displayName: "Generate SSH Key"
-      name: generateKey
+    - name: generateKey
       script: |
         ssh-keygen -t rsa -b 2048 -f $(sshKeyPath) -C "azureuser@myserver" -m PEM -N "" -q
         sshPublicKey=$(<$(sshKeyPath).pub)
         sshPrivateKey=$(<$(sshKeyPath))
         echo "##vso[task.setvariable variable=sshPublicKey;isOutput=true;isSecret=true]$sshPublicKey"
         echo "##vso[task.setvariable variable=sshPrivateKey;isOutput=true;isSecret=true]$sshPrivateKey"
+      displayName: "Generate SSH Key"
 
-    - displayName: "Get User Object ID"
-      name: getAdminObjectID
+    - name: getAdminObjectID
       task: AzureCLI@2
+      displayName: "Get User Object ID"
       inputs:
         azureSubscription: $(serviceConnection)
         scriptType: 'bash'
@@ -43,8 +43,8 @@ stages:
           echo "Fetched User Object ID: $userId"
           echo "##vso[task.setvariable variable=adminObjectID;isOutput=true;isSecret=true]$userId"
 
-    - displayName: Deploy Storage Accounts
-      task: AzureResourceManagerTemplateDeployment@3
+    - task: AzureResourceManagerTemplateDeployment@3
+      displayName: Deploy Storage Accounts
       inputs:
         deploymentScope: 'Resource Group'
         azureResourceManagerConnection: $(serviceConnection)
@@ -67,8 +67,8 @@ stages:
     displayName: "Deploy ARM Templates"
     steps:
 
-    - displayName: Deploy Storage Accounts
-      task: AzureResourceManagerTemplateDeployment@3
+    - task: AzureResourceManagerTemplateDeployment@3
+      displayName: Deploy Storage Accounts
       inputs:
         deploymentScope: 'Resource Group'
         azureResourceManagerConnection: $(serviceConnection)
@@ -81,9 +81,9 @@ stages:
         deploymentMode: 'Incremental'
 
 
-    - displayName: "print ssh key"
-      script: |
+    - script: |
         echo "SSH Key: $(SSH_PUBLIC_KEY)"
+      displayName: "print ssh key"
 
     - displayName: Deploy Linux Machine
       task: AzureResourceManagerTemplateDeployment@3
