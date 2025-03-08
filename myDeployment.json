@@ -47,13 +47,13 @@
         "description": "SSH public key for the VM."
       }
     },
-    // "location": {
-    //   "type": "string",
-    //   "defaultValue": "eastus",
-    //   "metadata": {
-    //     "description": "Azure region where the VM will be deployed."
-    //   }
-    // },
+    "location": {
+      "type": "string",
+      "defaultValue": "eastus",
+      "metadata": {
+        "description": "Azure region where the VM will be deployed."
+      }
+    },
     "vmSize": {
       "type": "string",
       "defaultValue": "Standard_B1s",
