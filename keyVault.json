@@ -42,7 +42,7 @@
     {
       "type": "Microsoft.KeyVault/vaults/accessPolicies",
       "apiVersion": "2023-07-01",
-      "name": "[concat(parameters('keyVaultName'), '/accessPolicies')]",
+      "name": "[concat(parameters('keyVaultName'), '/add')]",
       "dependsOn": [
         "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]"
       ],
