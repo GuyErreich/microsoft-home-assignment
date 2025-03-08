@@ -29,6 +29,7 @@ stages:
 
     - task: AzureCLI@2
       displayName: "Get User Object ID"
+      name: getAdminObjectID
       inputs:
         azureSubscription: $(serviceConnection)
         scriptType: 'bash'
@@ -50,7 +51,7 @@ stages:
         templateLocation: 'Linked artifact'
         csmFile: 'keyVault.json'
         deploymentMode: 'Incremental'
-        overrideParameters: '-keyVaultName "$(keyVaultName)" -adminObjectID "$(adminObjectID)"'
+        overrideParameters: '-keyVaultName "$(keyVaultName)" -adminObjectID "$(getAdminObjectID.adminObjectID)"'
 
     - script: |
         sshPubKey=$(cat $(sshKeyPath).pub)
