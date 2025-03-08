@@ -48,13 +48,6 @@
         "description": "The name of the network security group."
       }
     },
-    "networkInterfaceName": {
-      "type": "string",
-      "defaultValue": "my-nic",
-      "metadata": {
-        "description": "The name of the network interface."
-      }
-    },
     "vmName": {
       "type": "string",
       "defaultValue": "myLinuxVM",
@@ -67,12 +60,6 @@
       "defaultValue": "azureuser",
       "metadata": {
         "description": "Administrator username for the VM."
-      }
-    },
-    "sshPublicKey": {
-      "type": "string",
-      "metadata": {
-        "description": "SSH public key for the VM."
       }
     },
     "location": {
@@ -228,7 +215,7 @@
     {
       "type": "Microsoft.Network/publicIPAddresses",
       "apiVersion": "2024-05-01",
-      "name": "[parameters('publicIPName')]",
+      "name": "[concat(parameters('vmName'), '-pip')]",
       "location": "[parameters('location')]",
       "properties": {
         "publicIPAllocationMethod": "Dynamic"
@@ -241,7 +228,7 @@
       "location": "[parameters('location')]",
       "dependsOn": [
         "[resourceId('Microsoft.Network/virtualNetworks', parameters('vnetName'))]",
-        "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIPName'))]",
+        "[resourceId('Microsoft.Network/publicIPAddresses', concat(parameters('vmName'), '-pip'))]",
         "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('securityGroupName'))]"
       ],
       "properties": {
@@ -253,7 +240,7 @@
                 "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), 'default')]"
               },
               "publicIPAddress": {
-                "id": "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIPName'))]"
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses', concat(parameters('vmName'), '-pip'))]"
               }
             }
           }
