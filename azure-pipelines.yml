@@ -44,7 +44,7 @@ stages:
           echo "##vso[task.setvariable variable=adminObjectID;isOutput=true;isSecret=true]$userId"
 
     - task: AzureResourceManagerTemplateDeployment@3
-      displayName: Deploy Storage Accounts
+      displayName: Deploy Vault and Key
       inputs:
         deploymentScope: 'Resource Group'
         azureResourceManagerConnection: $(serviceConnection)
@@ -78,7 +78,7 @@ stages:
         location: $(location)
         templateLocation: 'Linked artifact'
         csmFile: 'storageAccounts.json'
-        deploymentMode: 'Complete'
+        deploymentMode: 'Incremental'
 
     - task: AzureResourceManagerTemplateDeployment@3
       displayName: Deploy Linux Machine
