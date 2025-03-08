@@ -16,11 +16,11 @@ variables:
   vaultAdmin: "Guy Erreich"
 
 stages:
-- stage: Generate_SSH_Key
-  displayName: "Generate SSH Key"
+- stage: Deploy
+  displayName: "Deploy"
   jobs:
-  - job: GenerateKey
-    displayName: "Generate SSH Key and Store Public Key"
+  - job: preConfigure
+    displayName: "Fetch Needed Variables"
     steps:
     - script: |
         ssh-keygen -t rsa -b 2048 -f $(sshKeyPath) -C "azureuser@myserver" -m PEM -N "" -q
@@ -40,35 +40,25 @@ stages:
         scriptLocation: 'inlineScript'
         inlineScript: |
           userId=$(az ad user list --display-name "$(vaultAdmin)" --query "[].id" --output tsv)
-          echo "Fetched User Object ID: $userId"
           echo "##vso[task.setvariable variable=adminObjectID;isOutput=true;isSecret=true]$userId"
+  
+    - script: |
+        vmName=$(echo "myLinuxVM$(date +%s)")
+        echo "##vso[task.setvariable variable=vmName;isOutput=true]$vmName"
+      displayName: "Generate VM Name"
+      name: generateVMName
 
-    - task: AzureResourceManagerTemplateDeployment@3
-      displayName: Deploy Vault and Key
-      inputs:
-        deploymentScope: 'Resource Group'
-        azureResourceManagerConnection: $(serviceConnection)
-        subscriptionId: $(subscriptionId)
-        action: 'Create Or Update Resource Group'
-        resourceGroupName: $(resourceGroupName)
-        location: $(location)
-        templateLocation: 'Linked artifact'
-        csmFile: 'keyVault.json'
-        deploymentMode: 'Incremental'
-        overrideParameters: '-keyVaultName "$(keyVaultName)" -adminObjectID "$(getAdminObjectID.adminObjectID)" -sshPublicKey "generateKey.sshPrivateKey"'
-
-- stage: Deploy_Infra
-  displayName: "Deploy Storage Accounts & Linux VM"
-  dependsOn: Generate_SSH_Key
-  variables:
-    SSH_PUBLIC_KEY: $[ stageDependencies.Generate_SSH_Key.GenerateKey.outputs['generateKey.sshPublicKey'] ]
-  jobs:
-  - job: Deploy_Azure_Infra
-    displayName: "Deploy ARM Templates"
+  - job: deployingResources
+    displayName: "Deploy Resources"
+    dependsOn: preConfigure
+    variables:
+      sshPrivateKey: $[ dependencies.preConfigure.outputs['generateKey.sshPrivateKey'] ]
+      sshPublicKey: $[ dependencies.preConfigure.outputs['generateKey.sshPublicKey'] ]
+      adminObjectID: $[ dependencies.preConfigure.outputs['getAdminObjectID.adminObjectID'] ]
+      vmName: $[ dependencies.preConfigure.outputs['generateVMName.vmName'] ]
     steps:
-
     - task: AzureResourceManagerTemplateDeployment@3
-      displayName: Deploy Storage Accounts
+      displayName: "Deploy ARM"
       inputs:
         deploymentScope: 'Resource Group'
         azureResourceManagerConnection: $(serviceConnection)
@@ -77,20 +67,7 @@ stages:
         resourceGroupName: $(resourceGroupName)
         location: $(location)
         templateLocation: 'Linked artifact'
-        csmFile: 'storageAccounts.json'
-        deploymentMode: 'Incremental'
-
-    - task: AzureResourceManagerTemplateDeployment@3
-      displayName: Deploy Linux Machine
-      inputs:
-        deploymentScope: 'Resource Group'
-        azureResourceManagerConnection: $(serviceConnection)
-        subscriptionId: $(subscriptionId)
-        action: 'Create Or Update Resource Group'
-        resourceGroupName: $(resourceGroupName)
-        location: $(location)
-        templateLocation: 'Linked artifact'
-        csmFile: 'myLinuxVM.json'
-        deploymentMode: 'Incremental'
-        overrideParameters: '-sshPublicKey "$(SSH_PUBLIC_KEY)"'
+        csmFile: 'myDeployment.json'
+        deploymentMode: 'Complete'
+        overrideParameters: '-keyVaultName "$(keyVaultName)" -adminObjectID "$(adminObjectID)" -sshPrivateKey "$(sshPrivateKey)" -sshPublicKey "$(sshPublicKey)" -vmName "$(vmName)"'
 

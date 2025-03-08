@@ -2,6 +2,31 @@
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
+    "keyVaultName": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the Azure Key Vault."
+      }
+    },
+    "adminObjectId": {
+      "type": "string",
+      "metadata": {
+        "description": "The Azure Active Directory (AAD) Object ID of the admin user."
+      }
+    },
+    "sshPrivateKey": {
+      "type": "string",
+      "metadata": {
+        "description": "SSH public key to store in the Key Vault."
+      }
+    },
+    "storageAccountPrefix": {
+      "type": "string",
+      "defaultValue": "mynewstorage",
+      "metadata": {
+        "description": "Prefix for the storage account names. Must be globally unique."
+      }
+    },
     "vmName": {
       "type": "string",
       "defaultValue": "myLinuxVM",
@@ -22,13 +47,13 @@
         "description": "SSH public key for the VM."
       }
     },
-    "location": {
-      "type": "string",
-      "defaultValue": "eastus",
-      "metadata": {
-        "description": "Azure region where the VM will be deployed."
-      }
-    },
+    // "location": {
+    //   "type": "string",
+    //   "defaultValue": "eastus",
+    //   "metadata": {
+    //     "description": "Azure region where the VM will be deployed."
+    //   }
+    // },
     "vmSize": {
       "type": "string",
       "defaultValue": "Standard_B1s",
@@ -38,6 +63,85 @@
     }
   },
   "resources": [
+    // Define the Vault and Key
+    {
+      "type": "Microsoft.KeyVault/vaults",
+      "apiVersion": "2023-07-01",
+      "name": "[parameters('keyVaultName')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "sku": {
+          "family": "A",
+          "name": "standard"
+        },
+        "tenantId": "[subscription().tenantId]",
+        "accessPolicies": [],
+        "enablePurgeProtection": true,
+        "enableSoftDelete": true
+      }
+    },
+    {
+      "type": "Microsoft.KeyVault/vaults/accessPolicies",
+      "apiVersion": "2023-07-01",
+      "name": "[concat(parameters('keyVaultName'), '/add')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]"
+      ],
+      "properties": {
+        "accessPolicies": [
+          {
+            "objectId": "[parameters('adminObjectId')]",
+            "tenantId": "[subscription().tenantId]",
+            "permissions": {
+              "keys": [ "get", "list", "create", "delete", "update", "import", "backup", "restore", "recover", "purge" ],
+              "secrets": [ "get", "list", "set", "delete", "recover", "backup", "restore" ],
+              "certificates": [ "get", "list", "create", "delete", "update", "import", "backup", "restore", "recover" ],
+              "storage": [ "get", "list", "set", "delete", "update", "backup", "restore", "recover" ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2023-07-01",
+      "name": "[concat(parameters('keyVaultName'), '/mySSHKey')]",
+      "location": "[parameters('location')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]"
+      ],
+      "properties": {
+        "value": "[parameters('sshPrivateKey')]"
+      }
+    },
+
+
+    // Define the Storage Accounts
+    {
+      "type": "Microsoft.Storage/storageAccounts",
+      "apiVersion": "2023-05-01",
+      "name": "[concat(parameters('storageAccountPrefix'), 'sa1')]",
+      "location": "[parameters('location')]",
+      "sku": {
+        "name": "Standard_LRS"
+      },
+      "kind": "StorageV2",
+      "properties": {}
+    },
+    {
+      "type": "Microsoft.Storage/storageAccounts",
+      "apiVersion": "2023-05-01",
+      "name": "[concat(parameters('storageAccountPrefix'), 'sa2')]",
+      "location": "[parameters('location')]",
+      "sku": {
+        "name": "Standard_LRS"
+      },
+      "kind": "StorageV2",
+      "properties": {}
+    },
+
+
+    // Define the Virtual Network and VM
     {
       "type": "Microsoft.Network/virtualNetworks",
       "apiVersion": "2024-05-01",
@@ -139,15 +243,15 @@
           "computerName": "[parameters('vmName')]",
           "adminUsername": "[parameters('adminUsername')]",
           "linuxConfiguration": {
-            "disablePasswordAuthentication": false
-            // "ssh": {
-            //   "publicKeys": [
-            //     {
-            //       "path": "/home/azureuser/.ssh/authorized_keys",
-            //       "keyData": "[parameters('sshPublicKey')]"
-            //     }
-            //   ]
-            // }
+            "disablePasswordAuthentication": true,
+            "ssh": {
+              "publicKeys": [
+                {
+                  "path": "/home/azureuser/.ssh/authorized_keys",
+                  "keyData": "[parameters('sshPublicKey')]"
+                }
+              ]
+            }
           }
         },
         "storageProfile": {

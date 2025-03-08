@@ -8,13 +8,6 @@
         "description": "The name of the Azure Key Vault."
       }
     },
-    "location": {
-      "type": "string",
-      "defaultValue": "eastus",
-      "metadata": {
-        "description": "Azure region for the Key Vault."
-      }
-    },
     "adminObjectId": {
       "type": "string",
       "metadata": {
@@ -29,55 +22,6 @@
     }
   },
   "resources": [
-    {
-      "type": "Microsoft.KeyVault/vaults",
-      "apiVersion": "2023-07-01",
-      "name": "[parameters('keyVaultName')]",
-      "location": "[parameters('location')]",
-      "properties": {
-        "sku": {
-          "family": "A",
-          "name": "standard"
-        },
-        "tenantId": "[subscription().tenantId]",
-        "accessPolicies": [],
-        "enablePurgeProtection": true,
-        "enableSoftDelete": true
-      }
-    },
-    {
-      "type": "Microsoft.KeyVault/vaults/accessPolicies",
-      "apiVersion": "2023-07-01",
-      "name": "[concat(parameters('keyVaultName'), '/add')]",
-      "dependsOn": [
-        "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]"
-      ],
-      "properties": {
-        "accessPolicies": [
-          {
-            "objectId": "[parameters('adminObjectId')]",
-            "tenantId": "[subscription().tenantId]",
-            "permissions": {
-              "keys": [ "get", "list", "create", "delete", "update", "import", "backup", "restore", "recover", "purge" ],
-              "secrets": [ "get", "list", "set", "delete", "recover", "backup", "restore" ],
-              "certificates": [ "get", "list", "create", "delete", "update", "import", "backup", "restore", "recover" ],
-              "storage": [ "get", "list", "set", "delete", "update", "backup", "restore", "recover" ]
-            }
-          }
-        ]
-      }
-    },
-    {
-      "type": "Microsoft.KeyVault/vaults/secrets",
-      "apiVersion": "2023-07-01",
-      "name": "[concat(parameters('keyVaultName'), '/mySSHKey')]",
-      "location": "[parameters('location')]",
-      "dependsOn": [
-        "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]"
-      ],
-      "properties": {
-        "value": "[parameters('sshPublicKey')]"
-      }
-    }
+    
   ]
 }
