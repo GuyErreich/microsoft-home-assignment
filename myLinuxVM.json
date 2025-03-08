@@ -17,7 +17,7 @@
       }
     },
     "sshPublicKey": {
-      "type": "string",
+      "type": "secureObject",
       "metadata": {
         "description": "SSH public key for the VM."
       }
