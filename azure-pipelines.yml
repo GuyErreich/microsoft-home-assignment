@@ -22,14 +22,18 @@ stages:
   - job: GenerateKey
     displayName: "Generate SSH Key and Store Public Key"
     steps:
-    - script: |
-        ssh-keygen -t rsa -b 2048 -f $(sshKeyPath) -C "azureuser@myserver" -N "" -q
-        cat $(sshKeyPath).pub
-      displayName: "Generate SSH Key"
+    - displayName: "Generate SSH Key"
+      name: generateKey
+      script: |
+        ssh-keygen -t rsa -b 2048 -f $(sshKeyPath) -C "azureuser@myserver" -m PEM -N "" -q
+        sshPublicKey=$(<$(sshKeyPath).pub)
+        sshPrivateKey=$(<$(sshKeyPath))
+        echo "##vso[task.setvariable variable=sshPublicKey;isOutput=true;isSecret=true]$sshPublicKey"
+        echo "##vso[task.setvariable variable=sshPrivateKey;isOutput=true;isSecret=true]$sshPrivateKey"
 
-    - task: AzureCLI@2
-      displayName: "Get User Object ID"
+    - displayName: "Get User Object ID"
       name: getAdminObjectID
+      task: AzureCLI@2
       inputs:
         azureSubscription: $(serviceConnection)
         scriptType: 'bash'
@@ -39,8 +43,8 @@ stages:
           echo "Fetched User Object ID: $userId"
           echo "##vso[task.setvariable variable=adminObjectID;isOutput=true;isSecret=true]$userId"
 
-    - task: AzureResourceManagerTemplateDeployment@3
-      displayName: Deploy Storage Accounts
+    - displayName: Deploy Storage Accounts
+      task: AzureResourceManagerTemplateDeployment@3
       inputs:
         deploymentScope: 'Resource Group'
         azureResourceManagerConnection: $(serviceConnection)
@@ -51,26 +55,20 @@ stages:
         templateLocation: 'Linked artifact'
         csmFile: 'keyVault.json'
         deploymentMode: 'Incremental'
-        overrideParameters: '-keyVaultName "$(keyVaultName)" -adminObjectID "$(getAdminObjectID.adminObjectID)"'
-
-    - script: |
-        sshPubKey=$(cat $(sshKeyPath).pub)
-        echo "##vso[task.setvariable variable=sshPublicKey;isOutput=true]$sshPubKey"
-      displayName: "Store SSH Public Key as Pipeline Variable"
-      name: storeKey
+        overrideParameters: '-keyVaultName "$(keyVaultName)" -adminObjectID "$(getAdminObjectID.adminObjectID)" -sshPublicKey "generateKey.sshPrivateKey"'
 
 - stage: Deploy_Infra
   displayName: "Deploy Storage Accounts & Linux VM"
   dependsOn: Generate_SSH_Key
   variables:
-    SSH_PUBLIC_KEY: $[ stageDependencies.Generate_SSH_Key.GenerateKey.outputs['storeKey.sshPublicKey'] ]
+    SSH_PUBLIC_KEY: $[ stageDependencies.Generate_SSH_Key.GenerateKey.outputs['generateKey.sshPublicKey'] ]
   jobs:
   - job: Deploy_Azure_Infra
     displayName: "Deploy ARM Templates"
     steps:
 
-    - task: AzureResourceManagerTemplateDeployment@3
-      displayName: Deploy Storage Accounts
+    - displayName: Deploy Storage Accounts
+      task: AzureResourceManagerTemplateDeployment@3
       inputs:
         deploymentScope: 'Resource Group'
         azureResourceManagerConnection: $(serviceConnection)
@@ -83,12 +81,12 @@ stages:
         deploymentMode: 'Incremental'
 
 
-    - script: |
+    - displayName: "print ssh key"
+      script: |
         echo "SSH Key: $(SSH_PUBLIC_KEY)"
-      displayName: "print ssh key"
 
-    - task: AzureResourceManagerTemplateDeployment@3
-      displayName: Deploy Linux Machine
+    - displayName: Deploy Linux Machine
+      task: AzureResourceManagerTemplateDeployment@3
       inputs:
         deploymentScope: 'Resource Group'
         azureResourceManagerConnection: $(serviceConnection)

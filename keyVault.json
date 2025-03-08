@@ -20,6 +20,12 @@
       "metadata": {
         "description": "The Azure Active Directory (AAD) Object ID of the admin user."
       }
+    },
+    "sshPublicKey": {
+      "type": "string",
+      "metadata": {
+        "description": "SSH public key to store in the Key Vault."
+      }
     }
   },
   "resources": [
@@ -62,17 +68,15 @@
       }
     },
     {
-      "type": "Microsoft.KeyVault/vaults/keys",
+      "type": "Microsoft.KeyVault/vaults/secrets",
       "apiVersion": "2023-07-01",
-      "name": "[concat(parameters('keyVaultName'), '/add')]",
+      "name": "[concat(parameters('keyVaultName'), '/mySSHKey')]",
       "location": "[parameters('location')]",
       "dependsOn": [
         "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]"
       ],
       "properties": {
-        "kty": "RSA",
-        "keySize": 2048,
-        "keyOps": [ "sign", "verify" ]
+        "value": "[parameters('sshPublicKey')]"
       }
     }
   ]
