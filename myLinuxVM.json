@@ -139,15 +139,15 @@
           "computerName": "[parameters('vmName')]",
           "adminUsername": "[parameters('adminUsername')]",
           "linuxConfiguration": {
-            "disablePasswordAuthentication": true, 
-            "ssh": {
-              "publicKeys": [
-                {
-                  "path": "/home/azureuser/.ssh/authorized_keys",
-                  "keyData": "[parameters('sshPublicKey')]"
-                }
-              ]
-            }
+            "disablePasswordAuthentication": false
+            // "ssh": {
+            //   "publicKeys": [
+            //     {
+            //       "path": "/home/azureuser/.ssh/authorized_keys",
+            //       "keyData": "[parameters('sshPublicKey')]"
+            //     }
+            //   ]
+            // }
           }
         },
         "storageProfile": {
