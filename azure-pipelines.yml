@@ -67,6 +67,11 @@ stages:
         csmFile: 'storageAccounts.json'
         deploymentMode: 'Incremental'
 
+
+    - script: |
+        echo $(Generate_SSH_Key.storeKey.outputs["sshPublicKey"])
+      displayName: "print ssh key"
+
     - task: AzureResourceManagerTemplateDeployment@3
       displayName: Deploy Linux Machine
       inputs:
