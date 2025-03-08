@@ -22,18 +22,18 @@ stages:
   - job: GenerateKey
     displayName: "Generate SSH Key and Store Public Key"
     steps:
-    - name: generateKey
-      script: |
+    - script: |
         ssh-keygen -t rsa -b 2048 -f $(sshKeyPath) -C "azureuser@myserver" -m PEM -N "" -q
         sshPublicKey=$(<$(sshKeyPath).pub)
         sshPrivateKey=$(<$(sshKeyPath))
         echo "##vso[task.setvariable variable=sshPublicKey;isOutput=true;isSecret=true]$sshPublicKey"
         echo "##vso[task.setvariable variable=sshPrivateKey;isOutput=true;isSecret=true]$sshPrivateKey"
       displayName: "Generate SSH Key"
+      name: generateKey
 
-    - name: getAdminObjectID
-      task: AzureCLI@2
+    - task: AzureCLI@2
       displayName: "Get User Object ID"
+      name: getAdminObjectID
       inputs:
         azureSubscription: $(serviceConnection)
         scriptType: 'bash'
@@ -85,8 +85,8 @@ stages:
         echo "SSH Key: $(SSH_PUBLIC_KEY)"
       displayName: "print ssh key"
 
-    - displayName: Deploy Linux Machine
-      task: AzureResourceManagerTemplateDeployment@3
+    - task: AzureResourceManagerTemplateDeployment@3
+      displayName: Deploy Linux Machine
       inputs:
         deploymentScope: 'Resource Group'
         azureResourceManagerConnection: $(serviceConnection)
