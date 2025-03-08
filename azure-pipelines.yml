@@ -69,7 +69,9 @@ stages:
 
 
     - script: |
-        echo '$(Generate_SSH_Key.storeKey.outputs["sshPublicKey"])'
+        echo $SSH_PUBLIC_KEY
+      env:
+        SSH_PUBLIC_KEY: $(Generate_SSH_Key.storeKey.outputs['sshPublicKey'])
       displayName: "print ssh key"
 
     - task: AzureResourceManagerTemplateDeployment@3
