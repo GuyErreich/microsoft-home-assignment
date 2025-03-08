@@ -23,7 +23,7 @@ stages:
     displayName: "Generate SSH Key and Store Public Key"
     steps:
     - script: |
-        ssh-keygen -t rsa -b 2048 -f $(sshKeyPath) -N "" -q
+        ssh-keygen -t rsa -b 2048 -f $(sshKeyPath) -C "azureuser@myserver" -N "" -q
         cat $(sshKeyPath).pub
       displayName: "Generate SSH Key"
 
@@ -73,8 +73,6 @@ stages:
 
     - script: |
         echo "SSH Key: $(SSH_PUBLIC_KEY)"
-      env:
-        SSH_PUBLIC_KEY: $(Generate_SSH_Key.storeKey.outputs['sshPublicKey'])
       displayName: "print ssh key"
 
     - task: AzureResourceManagerTemplateDeployment@3
@@ -89,5 +87,5 @@ stages:
         templateLocation: 'Linked artifact'
         csmFile: 'myLinuxVM.json'
         deploymentMode: 'Incremental'
-        overrideParameters: '-sshPublicKey $(Generate_SSH_Key.storeKey.outputs["sshPublicKey"])'
+        overrideParameters: '-sshPublicKey $(SSH_PUBLIC_KEY)'
 

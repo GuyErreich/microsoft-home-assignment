@@ -33,7 +33,7 @@
         "tenantId": "[subscription().tenantId]",
         "accessPolicies": [],
         "enablePurgeProtection": true,
-        "enableSoftDelete": true 
+        "enableSoftDelete": true
       }
     },
     {
