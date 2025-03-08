@@ -49,6 +49,9 @@ stages:
 
 - stage: Deploy_Infra
   displayName: "Deploy Storage Accounts & Linux VM"
+  dependsOn: Generate_SSH_Key
+  variables:
+    SSH_PUBLIC_KEY: $[ stageDependencies.Generate_SSH_Key.GenerateKey.outputs['storeKey.sshPublicKey'] ]
   jobs:
   - job: Deploy_Azure_Infra
     displayName: "Deploy ARM Templates"
@@ -69,7 +72,7 @@ stages:
 
 
     - script: |
-        echo $SSH_PUBLIC_KEY
+        echo "SSH Key: $(SSH_PUBLIC_KEY)"
       env:
         SSH_PUBLIC_KEY: $(Generate_SSH_Key.storeKey.outputs['sshPublicKey'])
       displayName: "print ssh key"
