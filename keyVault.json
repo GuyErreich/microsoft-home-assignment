@@ -29,7 +29,10 @@
       "name": "[parameters('keyVaultName')]",
       "location": "[parameters('location')]",
       "properties": {
-        "sku": { "family": "A", "name": "standard" },
+        "sku": {
+          "family": "A",
+          "name": "standard"
+        },
         "tenantId": "[subscription().tenantId]",
         "accessPolicies": [],
         "enablePurgeProtection": true,
@@ -49,10 +52,10 @@
             "objectId": "[parameters('adminObjectId')]",
             "tenantId": "[subscription().tenantId]",
             "permissions": {
-              "keys": ["get", "list", "create", "delete", "update", "import", "backup", "restore", "recover", "purge"],
-              "secrets": ["get", "list", "set", "delete", "recover", "backup", "restore"],
-              "certificates": ["get", "list", "create", "delete", "update", "import", "backup", "restore", "recover"],
-              "storage": ["get", "list", "set", "delete", "update", "backup", "restore", "recover"]
+              "keys": [ "get", "list", "create", "delete", "update", "import", "backup", "restore", "recover", "purge" ],
+              "secrets": [ "get", "list", "set", "delete", "recover", "backup", "restore" ],
+              "certificates": [ "get", "list", "create", "delete", "update", "import", "backup", "restore", "recover" ],
+              "storage": [ "get", "list", "set", "delete", "update", "backup", "restore", "recover" ]
             }
           }
         ]
@@ -61,18 +64,16 @@
     {
       "type": "Microsoft.KeyVault/vaults/keys",
       "apiVersion": "2023-07-01",
-      "name": "[concat(parameters('keyVaultName'), '/SSHPrivateKey')]",
+      "name": "[concat(parameters('keyVaultName'), '/add')]",
       "location": "[parameters('location')]",
       "dependsOn": [
         "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]"
       ],
       "properties": {
-
         "kty": "RSA",
         "keySize": 2048,
-        "keyOps": ["sign", "verify"]
+        "keyOps": [ "sign", "verify" ]
       }
     }
   ]
 }
-  

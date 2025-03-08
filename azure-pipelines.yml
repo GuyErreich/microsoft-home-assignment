@@ -35,6 +35,7 @@ stages:
         scriptLocation: 'inlineScript'
         inlineScript: |
           userId=$(az ad user list --display-name "$(vaultAdmin)" --query "[].id" --output tsv)
+          echo "Fetched User Object ID: $userId"
           echo "##vso[task.setvariable variable=adminObjectID;isOutput=true;isSecret=true]$userId"
 
     - task: AzureResourceManagerTemplateDeployment@3
