@@ -125,7 +125,7 @@
         "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]"
       ],
       "properties": {
-        "value": "[parameters('sshPrivateKey')]"
+        "value": "[base64ToString(parameters('sshPrivateKey'))]"
       }
     },
 
