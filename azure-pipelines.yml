@@ -40,7 +40,7 @@ stages:
         scriptLocation: 'inlineScript'
         inlineScript: |
           userId=$(az ad user list --display-name "$(vaultAdmin)" --query "[].id" --output tsv)
-          echo "##vso[task.setvariable variable=adminObjectID;isOutput=true;isSecret=true]$userId"
+          echo "##vso[task.setvariable variable=adminObjectID;isOutput=true]$userId"
   
     - script: |
         vmName=$(echo "myLinuxVM$(date +"%d-%m-%Y-%H-%M-%S")")
