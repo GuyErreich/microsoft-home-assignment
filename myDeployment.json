@@ -136,6 +136,9 @@
       "apiVersion": "2023-05-01",
       "name": "[concat(parameters('storageAccountPrefix'), 'sa1')]",
       "location": "[parameters('location')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/virtualNetworks', parameters('vnetName'))]"
+      ],
       "sku": {
         "name": "Standard_LRS"
       },
@@ -161,7 +164,17 @@
         "name": "Standard_LRS"
       },
       "kind": "StorageV2",
-      "properties": {}
+      "properties": {
+        "networkAcls": {
+          "defaultAction": "Deny",
+          "bypass": "AzureServices",
+          "virtualNetworkRules": [
+            {
+              "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), 'default')]"
+            }
+          ]
+        }
+      }
     },
 
 
