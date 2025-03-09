@@ -188,8 +188,10 @@
         "privateLinkServiceConnections": [
           {
             "name": "storage-private-link",
-            "privateLinkServiceId": "[resourceId('Microsoft.Storage/storageAccounts', concat(parameters('storageAccountPrefix'), 'sa1'))]",
-            "groupIds": ["blob"]
+            "properties": {
+              "privateLinkServiceId": "[resourceId('Microsoft.Storage/storageAccounts', concat(parameters('storageAccountPrefix'), 'sa1'))]",
+              "groupIds": ["blob"]
+            }
           }
         ],
         "subnet": {
