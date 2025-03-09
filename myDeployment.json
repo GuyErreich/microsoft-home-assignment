@@ -193,7 +193,7 @@
             "name": "default",
             "properties": {
               "addressPrefix": "10.0.0.0/24",
-              "serviceEndpoints": [  // ✅ Add This Section
+              "serviceEndpoints": [
                 {
                   "service": "Microsoft.Storage"
                 }
