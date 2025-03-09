@@ -228,7 +228,7 @@
     {
       "type": "Microsoft.Network/privateDnsZones/virtualNetworkLinks",
       "apiVersion": "2024-06-01",
-      "name": "[concat(parameters('vnetName'), '-dns-link')]",
+      "name": "[concat('privatelink.blob.core.windows.net/', parameters('vnetName'), '-dns-link')]",
       "location": "global",
       "dependsOn": [
         "[resourceId('Microsoft.Network/privateDnsZones', 'privatelink.blob.core.windows.net')]"
