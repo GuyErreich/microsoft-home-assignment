@@ -12,7 +12,7 @@ variables:
   subscriptionId: "938d8cb0-7326-4b21-82ac-a9a5017a87ea"
   location: "East US"
   sshKeyPath: "$(Build.ArtifactStagingDirectory)/id_rsa"
-  keyVaultName: "myPresonalKeyVault"
+  keyVaultName: "myPresonalKeyVault2"
   vaultAdmin: "Guy Erreich"
 
 stages:
