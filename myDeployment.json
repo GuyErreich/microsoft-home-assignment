@@ -263,6 +263,7 @@
           {
             "name": "publicConfig",
             "properties": {
+              "primary": true,
               "privateIPAllocationMethod": "Dynamic",
               "subnet": {
                 "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), 'default')]"
@@ -275,7 +276,7 @@
           {
             "name": "privateConfig",
             "properties": {
-              "primary": true,
+              "primary": false,
               "privateIPAllocationMethod": "Dynamic",
               "subnet": {
                 "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), 'default')]"
