@@ -176,6 +176,69 @@
         }
       }
     },
+    {
+      "type": "Microsoft.Network/privateEndpoints",
+      "apiVersion": "2024-05-01",
+      "name": "storage-private-endpoint-sa1",
+      "location": "[parameters('location')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Storage/storageAccounts', concat(parameters('storageAccountPrefix'), 'sa1'))]"
+      ],
+      "properties": {
+        "privateLinkServiceConnections": [
+          {
+            "name": "storage-private-link",
+            "privateLinkServiceId": "[resourceId('Microsoft.Storage/storageAccounts', concat(parameters('storageAccountPrefix'), 'sa1'))]",
+            "groupIds": ["blob"]
+          }
+        ],
+        "subnet": {
+          "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), 'default')]"
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Network/privateEndpoints",
+      "apiVersion": "2024-05-01",
+      "name": "storage-private-endpoint-sa2",
+      "location": "[parameters('location')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Storage/storageAccounts', concat(parameters('storageAccountPrefix'), 'sa2'))]"
+      ],
+      "properties": {
+        "privateLinkServiceConnections": [
+          {
+            "name": "storage-private-link",
+            "privateLinkServiceId": "[resourceId('Microsoft.Storage/storageAccounts', concat(parameters('storageAccountPrefix'), 'sa2'))]",
+            "groupIds": ["blob"]
+          }
+        ],
+        "subnet": {
+          "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), 'default')]"
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Network/privateDnsZones",
+      "apiVersion": "2024-06-01",
+      "name": "privatelink.blob.core.windows.net",
+      "location": "global",
+      "properties": {}
+    },
+    {
+      "type": "Microsoft.Network/privateDnsZones/virtualNetworkLinks",
+      "apiVersion": "2024-06-01",
+      "name": "[concat(parameters('vnetName'), '-dns-link')]",
+      "location": "global",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/privateDnsZones', 'privatelink.blob.core.windows.net')]"
+      ],
+      "properties": {
+        "virtualNetwork": {
+          "id": "[resourceId('Microsoft.Network/virtualNetworks', parameters('vnetName'))]"
+        }
+      }
+    },
 
 
     // Define the Virtual Network and VM
@@ -263,7 +326,7 @@
           {
             "name": "publicConfig",
             "properties": {
-              "primary": true,
+              "primary": false,
               "privateIPAllocationMethod": "Dynamic",
               "subnet": {
                 "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), 'default')]"
@@ -276,7 +339,7 @@
           {
             "name": "privateConfig",
             "properties": {
-              "primary": false,
+              "primary": true,
               "privateIPAllocationMethod": "Dynamic",
               "subnet": {
                 "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), 'default')]"
