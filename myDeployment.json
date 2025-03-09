@@ -425,7 +425,7 @@
       "name": "[concat(parameters('vmName'), 'StorageBlobDataReaderAssignment')]",
       "dependsOn": [
         "[resourceId('Microsoft.Compute/virtualMachines', parameters('vmName'))]",
-        "[resourceId('Microsoft.Authorization/roleDefinitions', resourceId('Microsoft.Compute/virtualMachines', parameters('vmName'), 'StorageBlobDataReaderDefinition'))]"
+        "[resourceId('Microsoft.Authorization/roleDefinitions', concat(parameters('vmName'), 'StorageBlobDataReaderDefinition'))]"
       ],
       "properties": {
         "roleDefinitionId": "[resourceId('Microsoft.Authorization/roleDefinitions', parameters('vmName'), 'StorageBlobDataReaderDefinition')]",
