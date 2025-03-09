@@ -398,7 +398,7 @@
     {
       "type": "Microsoft.Authorization/roleDefinitions",
       "apiVersion": "2022-04-01",
-      "name": "[resourceId('Microsoft.Compute/virtualMachines', parameters('vmName'), 'StorageBlobDataReaderDefinition')]",
+      "name": "[concat(parameters('vmName'), 'StorageBlobDataReaderDefinition')]",
       "dependsOn": [
         "[resourceId('Microsoft.Compute/virtualMachines', parameters('vmName'))]"
       ],
@@ -422,13 +422,13 @@
     {
       "type": "Microsoft.Authorization/roleAssignments",
       "apiVersion": "2022-04-01",
-      "name": "[resourceId('Microsoft.Compute/virtualMachines', parameters('vmName'), 'StorageBlobDataReaderAssignment')]",
+      "name": "[concat(parameters('vmName'), 'StorageBlobDataReaderAssignment')]",
       "dependsOn": [
         "[resourceId('Microsoft.Compute/virtualMachines', parameters('vmName'))]",
         "[resourceId('Microsoft.Authorization/roleDefinitions', resourceId('Microsoft.Compute/virtualMachines', parameters('vmName'), 'StorageBlobDataReaderDefinition'))]"
       ],
       "properties": {
-        "roleDefinitionId": "[resourceId('Microsoft.Compute/virtualMachines', parameters('vmName'), 'StorageBlobDataReaderDefinition')]",
+        "roleDefinitionId": "[resourceId('Microsoft.Authorization/roleDefinitions', parameters('vmName'), 'StorageBlobDataReaderDefinition')]",
         "principalId": "[reference(resourceId('Microsoft.Compute/virtualMachines', parameters('vmName')), '2021-03-01', 'Full').identity.principalId]"
       }
     }
