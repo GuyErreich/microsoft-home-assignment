@@ -144,15 +144,15 @@
       },
       "kind": "StorageV2",
       "properties": {
-        "networkAcls": {
-          "defaultAction": "Deny",
-          "bypass": "AzureServices",
-          "virtualNetworkRules": [
-            {
-              "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), 'default')]"
-            }
-          ]
-        }
+        // "networkAcls": {
+        //   "defaultAction": "Deny",
+        //   "bypass": "AzureServices",
+        //   "virtualNetworkRules": [
+        //     {
+        //       "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), 'default')]"
+        //     }
+        //   ]
+        // }
       }
     },
     {
@@ -165,15 +165,15 @@
       },
       "kind": "StorageV2",
       "properties": {
-        "networkAcls": {
-          "defaultAction": "Deny",
-          "bypass": "AzureServices",
-          "virtualNetworkRules": [
-            {
-              "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), 'default')]"
-            }
-          ]
-        }
+        // "networkAcls": {
+        //   "defaultAction": "Deny",
+        //   "bypass": "AzureServices",
+        //   "virtualNetworkRules": [
+        //     {
+        //       "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), 'default')]"
+        //     }
+        //   ]
+        // }
       }
     },
     {
@@ -199,50 +199,50 @@
         }
       }
     },
-    {
-      "type": "Microsoft.Network/privateEndpoints",
-      "apiVersion": "2024-05-01",
-      "name": "storage-private-endpoint-sa2",
-      "location": "[parameters('location')]",
-      "dependsOn": [
-        "[resourceId('Microsoft.Storage/storageAccounts', concat(parameters('storageAccountPrefix'), 'sa2'))]"
-      ],
-      "properties": {
-        "privateLinkServiceConnections": [
-          {
-            "name": "storage-private-link",
-            "properties": {
-              "privateLinkServiceId": "[resourceId('Microsoft.Storage/storageAccounts', concat(parameters('storageAccountPrefix'), 'sa2'))]",
-              "groupIds": ["blob"]
-            }
-          }
-        ],
-        "subnet": {
-          "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), 'default')]"
-        }
-      }
-    },
-    {
-      "type": "Microsoft.Network/privateDnsZones",
-      "apiVersion": "2024-06-01",
-      "name": "privatelink.blob.core.windows.net",
-      "location": "global",
-      "properties": {}
-    },
-    {
-      "type": "Microsoft.Network/privateDnsZones/virtualNetworkLinks",
-      "apiVersion": "2024-06-01",
-      "name": "[concat('privatelink.blob.core.windows.net/', parameters('vnetName'), '-dns-link')]",
-      "location": "global",
-      "dependsOn": [
-        "[resourceId('Microsoft.Network/privateDnsZones', 'privatelink.blob.core.windows.net')]"
-      ],
-      "properties": {
-        "virtualNetwork": {
-          "id": "[resourceId('Microsoft.Network/virtualNetworks', parameters('vnetName'))]"
-        }
-      }
-    },
+    // {
+    //   "type": "Microsoft.Network/privateEndpoints",
+    //   "apiVersion": "2024-05-01",
+    //   "name": "storage-private-endpoint-sa2",
+    //   "location": "[parameters('location')]",
+    //   "dependsOn": [
+    //     "[resourceId('Microsoft.Storage/storageAccounts', concat(parameters('storageAccountPrefix'), 'sa2'))]"
+    //   ],
+    //   "properties": {
+    //     "privateLinkServiceConnections": [
+    //       {
+    //         "name": "storage-private-link",
+    //         "properties": {
+    //           "privateLinkServiceId": "[resourceId('Microsoft.Storage/storageAccounts', concat(parameters('storageAccountPrefix'), 'sa2'))]",
+    //           "groupIds": ["blob"]
+    //         }
+    //       }
+    //     ],
+    //     "subnet": {
+    //       "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), 'default')]"
+    //     }
+    //   }
+    // },
+    // {
+    //   "type": "Microsoft.Network/privateDnsZones",
+    //   "apiVersion": "2024-06-01",
+    //   "name": "privatelink.blob.core.windows.net",
+    //   "location": "global",
+    //   "properties": {}
+    // },
+    // {
+    //   "type": "Microsoft.Network/privateDnsZones/virtualNetworkLinks",
+    //   "apiVersion": "2024-06-01",
+    //   "name": "[concat('privatelink.blob.core.windows.net/', parameters('vnetName'), '-dns-link')]",
+    //   "location": "global",
+    //   "dependsOn": [
+    //     "[resourceId('Microsoft.Network/privateDnsZones', 'privatelink.blob.core.windows.net')]"
+    //   ],
+    //   "properties": {
+    //     "virtualNetwork": {
+    //       "id": "[resourceId('Microsoft.Network/virtualNetworks', parameters('vnetName'))]"
+    //     }
+    //   }
+    // },
 
 
     // Define the Virtual Network and VM
@@ -259,12 +259,12 @@
           {
             "name": "default",
             "properties": {
-              "addressPrefix": "10.0.0.0/24",
-              "serviceEndpoints": [
-                {
-                  "service": "Microsoft.Storage"
-                }
-              ]
+              "addressPrefix": "10.0.0.0/24"
+              // "serviceEndpoints": [
+              //   {
+              //     "service": "Microsoft.Storage"
+              //   }
+              // ]
             }
           }
         ]
@@ -328,23 +328,12 @@
       "properties": {
         "ipConfigurations": [
           {
-            "name": "publicConfig",
+            "name": "ipconfig1",
             "properties": {
-              "primary": false,
               "privateIPAllocationMethod": "Dynamic",
-              "subnet": {
-                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), 'default')]"
-              },
               "publicIPAddress": {
                 "id": "[resourceId('Microsoft.Network/publicIPAddresses', concat(parameters('vmName'), '-pip'))]"
-              }
-            }
-          },
-          {
-            "name": "privateConfig",
-            "properties": {
-              "primary": true,
-              "privateIPAllocationMethod": "Dynamic",
+              },
               "subnet": {
                 "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), 'default')]"
               }
