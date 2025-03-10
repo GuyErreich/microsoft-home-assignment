@@ -259,12 +259,12 @@
           {
             "name": "default",
             "properties": {
-              "addressPrefix": "10.0.0.0/24"
-              // "serviceEndpoints": [
-              //   {
-              //     "service": "Microsoft.Storage"
-              //   }
-              // ]
+              "addressPrefix": "10.0.0.0/24",
+              "serviceEndpoints": [
+                {
+                  "service": "Microsoft.Storage"
+                }
+              ]
             }
           }
         ]
