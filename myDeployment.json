@@ -452,7 +452,7 @@
       "name": "[guid(concat(subscription().subscriptionId, parameters('vmName'), '-StorageBlobDataReaderAssignment'))]",
       "dependsOn": [
         "[resourceId('Microsoft.Compute/virtualMachines', parameters('vmName'))]",
-        "[resourceId('Microsoft.Authorization/roleDefinitions', guid(concat(subscription().subscriptionId, parameters('vmName'), '-StorageBlobDataReaderDefinition')))]"
+        // "[resourceId('Microsoft.Authorization/roleDefinitions', guid(concat(subscription().subscriptionId, parameters('vmName'), '-StorageBlobDataReaderDefinition')))]"
       ],
       "properties": {
         "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'Storage Blob Data Owner')]",
