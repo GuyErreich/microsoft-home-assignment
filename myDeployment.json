@@ -425,8 +425,7 @@
         "roleName": "[concat(parameters('vmName'), '-StorageBlobDataReader')]",
         "description": "Can read storage blobs and containers.",
         "assignableScopes": [
-          "[resourceId('Microsoft.Storage/storageAccounts', concat(parameters('storageAccountPrefix'), 'sa1'))]",
-          "[resourceId('Microsoft.Storage/storageAccounts', concat(parameters('storageAccountPrefix'), 'sa2'))]"
+          "[resourceGroup().id]"
         ],
         "permissions": [
           {
