@@ -398,7 +398,7 @@
     {
       "type": "Microsoft.Compute/virtualMachines/extensions",
       "apiVersion": "2024-07-01",
-      "name": "[concat(parameters('vmName'), '-azure-cli-setup')]",
+      "name": "[concat(parameters('vmName'), '/azure-cli-setup')]",
       "location": "[parameters('location')]",
       "dependsOn": [
         "[resourceId('Microsoft.Compute/virtualMachines', parameters('vmName'))]"
