@@ -413,51 +413,43 @@
         "autoUpgradeMinorVersion": true,
         "settings": {
           "fileUris": [],
-          "commandToExecute": "curl -sL https://aka.ms/InstallAzureCLIDeb | bash && az login --identity --allow-no-subscriptions"
+          "commandToExecute": "sudo apt-get update && \\
+                                sudo apt-get install -y python3.8 python3.8-venv python3.8-dev python3-pip && \\
+                                sudo update-alternatives --set python3 /usr/bin/python3.8 && \\
+                                python3 -m pip install --upgrade pip && \\
+                                python3 -m pip install azure-identity azure-mgmt-storage azure-storage-blob argparse && \\
+                                curl -sL https://aka.ms/InstallAzureCLIDeb | bash && \\
+                                az login --identity --allow-no-subscriptions"
         }
       }
     },
-    // {
-    //   "type": "Microsoft.Authorization/roleDefinitions",
-    //   "apiVersion": "2022-04-01",
-    //   "name": "[guid(concat(subscription().subscriptionId, parameters('vmName'), '-StorageBlobDataReaderDefinition'))]",
-    //   "dependsOn": [
-    //     "[resourceId('Microsoft.Compute/virtualMachines', parameters('vmName'))]"
-    //   ],
-    //   "properties": {
-    //     "roleName": "[concat(parameters('vmName'), '-StorageBlobDataReader')]",
-    //     "description": "Can read storage blobs and containers.",
-    //     "assignableScopes": [
-    //       "[resourceGroup().id]"
-    //     ],
-    //     "permissions": [
-    //       {
-    //         "actions": [
-    //           "Microsoft.Storage/storageAccounts/blobServices/containers/read",
-    //           "Microsoft.Storage/storageAccounts/blobServices/containers/write"
-    //         ],
-    //         "dataActions": [
-    //           "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/read",
-    //           "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/write",
-    //           "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/add/action",
-    //           "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/move/action"
-    //         ]
-    //       }
-    //     ]
-    //   }
-    // },
     {
       "type": "Microsoft.Authorization/roleAssignments",
       "apiVersion": "2022-04-01",
       "name": "[guid(concat(subscription().subscriptionId, parameters('vmName'), '-StorageBlobDataReaderAssignment'))]",
       "dependsOn": [
         "[resourceId('Microsoft.Compute/virtualMachines', parameters('vmName'))]"
-        // "[resourceId('Microsoft.Authorization/roleDefinitions', guid(concat(subscription().subscriptionId, parameters('vmName'), '-StorageBlobDataReaderDefinition')))]"
       ],
       "properties": {
         "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'ba92f5b4-2d11-453d-a403-e96b0029c9fe')]", // Storage Blob Data Contributor
-        "principalId": "[reference(resourceId('Microsoft.Compute/virtualMachines', parameters('vmName')), '2024-07-01', 'Full').identity.principalId]"
-      }
-    }
+        "principalId": "[reference(resourceId('Microsoft.Compute/virtualMachines', parameters('vmName')), '2024-07-01', 'Full').identity.principalId]",
+        "principalType": "ServicePrincipal"
+      },
+      "scope": "[resourceId('Microsoft.Storage/storageAccounts', concat(parameters('storageAccountPrefix'), 'sa1'))]"
+    },
+    {
+    "type": "Microsoft.Authorization/roleAssignments",
+    "apiVersion": "2022-04-01",
+    "name": "[guid(concat(subscription().subscriptionId, parameters('vmName'), '-StorageBlobDataReaderAssignment'))]",
+    "dependsOn": [
+      "[resourceId('Microsoft.Compute/virtualMachines', parameters('vmName'))]"
+    ],
+    "properties": {
+      "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'ba92f5b4-2d11-453d-a403-e96b0029c9fe')]", // Storage Blob Data Contributor
+      "principalId": "[reference(resourceId('Microsoft.Compute/virtualMachines', parameters('vmName')), '2024-07-01', 'Full').identity.principalId]",
+      "principalType": "ServicePrincipal"
+    },
+    "scope": "[resourceId('Microsoft.Storage/storageAccounts', concat(parameters('storageAccountPrefix'), 'sa2'))]"
+  }
   ]
 }
