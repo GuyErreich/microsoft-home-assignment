@@ -410,12 +410,7 @@
         "autoUpgradeMinorVersion": true,
         "settings": {
           "fileUris": [],
-          "commandToExecute": "curl -sL https://aka.ms/InstallAzureCLIDeb | bash && az login --identity"
-        },
-        "protectedSettings": {
-          "commandToExecute": "",
-          "storageAccountName": "",
-          "storageAccountKey": ""
+          "commandToExecute": "curl -sL https://aka.ms/InstallAzureCLIDeb | bash && az login --identity --allow-no-subscriptions"
         }
       }
     },
@@ -430,7 +425,8 @@
         "roleName": "[concat(parameters('vmName'), '-StorageBlobDataReader')]",
         "description": "Can read storage blobs and containers.",
         "assignableScopes": [
-          "[resourceGroup().id]"
+          "[resourceId('Microsoft.Storage/storageAccounts', concat(parameters('storageAccountPrefix'), 'sa1'))]",
+          "[resourceId('Microsoft.Storage/storageAccounts', concat(parameters('storageAccountPrefix'), 'sa2'))]"
         ],
         "permissions": [
           {
