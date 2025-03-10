@@ -406,7 +406,7 @@
         "roleName": "[concat(parameters('vmName'), '-StorageBlobDataReader')]",
         "description": "Can read storage blobs and containers.",
         "assignableScopes": [
-          "[subscription().id]"
+          "[resourceGroup().id]"
         ],
         "permissions": [
           {
