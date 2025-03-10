@@ -253,7 +253,7 @@
       "location": "[parameters('location')]",
       "properties": {
         "addressSpace": {
-          "addressPrefixes": ["10.0.0.0/16"]
+          "addressPrefixes": [ "10.0.0.0/16" ]
         },
         "subnets": [
           {
@@ -283,7 +283,7 @@
               "protocol": "Tcp",
               "sourcePortRange": "*",
               "destinationPortRange": "22",
-              "sourceAddressPrefix": "*",  
+              "sourceAddressPrefix": "*",
               "destinationAddressPrefix": "*",
               "access": "Allow",
               "priority": 1000,
@@ -396,6 +396,30 @@
       }
     },
     {
+      "type": "Microsoft.Compute/virtualMachines/extensions",
+      "apiVersion": "2024-07-01",
+      "name": "[concat(parameters('vmName'), '-azure-cli-setup')]",
+      "location": "[parameters('location')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Compute/virtualMachines', parameters('vmName'))]"
+      ],
+      "properties": {
+        "publisher": "Microsoft.Azure.Extensions",
+        "type": "CustomScript",
+        "typeHandlerVersion": "2.0",
+        "autoUpgradeMinorVersion": true,
+        "settings": {
+          "fileUris": [],
+          "commandToExecute": "curl -sL https://aka.ms/InstallAzureCLIDeb | bash && az login --identity"
+        },
+        "protectedSettings": {
+          "commandToExecute": "",
+          "storageAccountName": "",
+          "storageAccountKey": ""
+        }
+      }
+    },
+    {
       "type": "Microsoft.Authorization/roleDefinitions",
       "apiVersion": "2022-04-01",
       "name": "[guid(concat(subscription().subscriptionId, parameters('vmName'), '-StorageBlobDataReaderDefinition'))]",
@@ -427,7 +451,7 @@
         "[resourceId('Microsoft.Authorization/roleDefinitions', guid(concat(subscription().subscriptionId, parameters('vmName'), '-StorageBlobDataReaderDefinition')))]"
       ],
       "properties": {
-        "roleDefinitionId": "[guid(concat(subscription().subscriptionId, parameters('vmName'), '-StorageBlobDataReaderDefinition'))]",
+        "roleDefinitionId": "[resourceId('Microsoft.Authorization/roleDefinitions', guid(concat(subscription().subscriptionId, parameters('vmName'), '-StorageBlobDataReaderDefinition')))]",
         "principalId": "[reference(resourceId('Microsoft.Compute/virtualMachines', parameters('vmName')), '2024-07-01', 'Full').identity.principalId]"
       }
     }
