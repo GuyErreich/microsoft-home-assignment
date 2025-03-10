@@ -425,10 +425,10 @@
       "name": "[concat(parameters('vmName'), 'StorageBlobDataReaderAssignment')]",
       "dependsOn": [
         "[resourceId('Microsoft.Compute/virtualMachines', parameters('vmName'))]",
-        "[resourceId('Microsoft.Authorization/roleDefinitions', concat(parameters('vmName'), 'StorageBlobDataReaderDefinition'))]"
+        "[guid(resourceId('Microsoft.Authorization/roleDefinitions', concat(parameters('vmName'), 'StorageBlobDataReaderDefinition')))]"
       ],
       "properties": {
-        "roleDefinitionId": "[resourceId('Microsoft.Authorization/roleDefinitions', parameters('vmName'), 'StorageBlobDataReaderDefinition')]",
+        "roleDefinitionId": "[guid(resourceId('Microsoft.Authorization/roleDefinitions', parameters('vmName'), 'StorageBlobDataReaderDefinition'))]",
         "principalId": "[reference(resourceId('Microsoft.Compute/virtualMachines', parameters('vmName')), '2021-03-01', 'Full').identity.principalId]"
       }
     }
