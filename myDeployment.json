@@ -160,6 +160,9 @@
       "apiVersion": "2023-05-01",
       "name": "[concat(parameters('storageAccountPrefix'), 'sa2')]",
       "location": "[parameters('location')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/virtualNetworks', parameters('vnetName'))]"
+      ],
       "sku": {
         "name": "Standard_LRS"
       },
