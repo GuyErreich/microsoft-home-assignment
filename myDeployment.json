@@ -412,7 +412,7 @@
           {
             "dataActions": [
               "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/read",
-              "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/list"
+              "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/write"
             ]
           }
         ]
