@@ -429,7 +429,7 @@
       ],
       "properties": {
         "roleDefinitionId": "[guid(resourceId('Microsoft.Authorization/roleDefinitions', parameters('vmName'), 'StorageBlobDataReaderDefinition'))]",
-        "principalId": "[reference(resourceId('Microsoft.Compute/virtualMachines', parameters('vmName')), '2021-03-01', 'Full').identity.principalId]"
+        "principalId": "[reference(parameters('vmName'), '2024-07-01', 'Full').identity.principalId]"
       }
     }
   ]
