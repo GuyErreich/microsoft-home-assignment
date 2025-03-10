@@ -433,8 +433,8 @@
         "permissions": [
           {
             "dataActions": [
-              "Microsoft.Storage/storageAccounts/blobServices/containers/blobs/*"
-
+              "Microsoft.Storage/storageAccounts/blobServices/containers/read",
+              "Microsoft.Storage/storageAccounts/blobServices/containers/write"
             ]
           }
         ]
