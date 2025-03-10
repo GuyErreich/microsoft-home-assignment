@@ -406,7 +406,7 @@
         "roleName": "[concat(parameters('vmName'), '-StorageBlobDataReader')]",
         "description": "Can read storage blobs and containers.",
         "assignableScopes": [
-          "[resourceId('Microsoft.Resources/resourceGroups', resourceGroup().name)]"
+          "[resourceGroup().id]"
         ],
         "permissions": [
           {
@@ -427,7 +427,7 @@
         "[resourceId('Microsoft.Authorization/roleDefinitions', guid(concat(subscription().subscriptionId, parameters('vmName'), '-StorageBlobDataReaderDefinition')))]"
       ],
       "properties": {
-        "roleDefinitionId": "[reference(guid(concat(subscription().subscriptionId, parameters('vmName'), '-StorageBlobDataReaderDefinition')), '2022-04-01', 'Full').id]",
+        "roleDefinitionId": "[guid(concat(subscription().subscriptionId, parameters('vmName'), '-StorageBlobDataReaderDefinition'))]",
         "principalId": "[reference(resourceId('Microsoft.Compute/virtualMachines', parameters('vmName')), '2024-07-01', 'Full').identity.principalId]"
       }
     }
