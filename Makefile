@@ -13,6 +13,7 @@ INIT_SCRIPT = sudo update-alternatives --install /usr/bin/python3 python3 /usr/b
 key:
 	@if [ ! -f "${SSH_KEY}" ]; then \
 		echo "Fetching SSH key from Azure Key Vault..."; \
+		mkdir -p ~/.ssh && chmod 700 ~/.ssh
 		az keyvault secret show --name mySSHKey --vault-name ${VAULT_NAME} --query value -o tsv > ${SSH_KEY}; \
 		chmod 600 ${SSH_KEY}; \
 	else \
