@@ -420,7 +420,7 @@
     {
       "type": "Microsoft.Authorization/roleAssignments",
       "apiVersion": "2022-04-01",
-      "name": "[guid(concat(subscription().subscriptionId, parameters('vmName'), '-StorageBlobDataReaderAssignment1'))]",
+      "name": "[guid(concat(subscription().subscriptionId, parameters('vmName'), '-StorageBlobDataContributorAssignment1'))]",
       "dependsOn": [
         "[resourceId('Microsoft.Compute/virtualMachines', parameters('vmName'))]"
       ],
@@ -434,7 +434,7 @@
     {
       "type": "Microsoft.Authorization/roleAssignments",
       "apiVersion": "2022-04-01",
-      "name": "[guid(concat(subscription().subscriptionId, parameters('vmName'), '-StorageBlobDataReaderAssignment2'))]",
+      "name": "[guid(concat(subscription().subscriptionId, parameters('vmName'), '-StorageBlobDataContributorAssignment2'))]",
       "dependsOn": [
         "[resourceId('Microsoft.Compute/virtualMachines', parameters('vmName'))]"
       ],
@@ -444,6 +444,19 @@
         "principalType": "ServicePrincipal"
       },
       "scope": "[resourceId('Microsoft.Storage/storageAccounts', concat(parameters('storageAccountPrefix'), 'sa2'))]"
+    },
+    {
+      "type": "Microsoft.Authorization/roleAssignments",
+      "apiVersion": "2022-04-01",
+      "name": "[guid(concat(subscription().subscriptionId, parameters('vmName'), '-ReaderAssignment'))]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Compute/virtualMachines', parameters('vmName'))]"
+      ],
+      "properties": {
+        "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'acdd72a7-3385-48ef-bd42-f606fba81ae7')]",
+        "principalId": "[reference(resourceId('Microsoft.Compute/virtualMachines', parameters('vmName')), '2024-07-01', 'Full').identity.principalId]",
+        "principalType": "ServicePrincipal"
+      }
     }
   ]
 }
