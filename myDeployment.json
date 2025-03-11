@@ -362,8 +362,21 @@
         "typeHandlerVersion": "2.0",
         "autoUpgradeMinorVersion": true,
         "settings": {
-          "fileUris": [],
-          "commandToExecute": "curl -sL https://aka.ms/InstallAzureCLIDeb | bash && az login --identity --allow-no-subscriptions"
+          "commandToExecute": "sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.6 1 && sudo update-alternatives --set python3 /usr/bin/python3.6 && sudo apt-get update && sudo apt install make && curl -sL https://aka.ms/InstallAzureCLIDeb | bash && az login --identity --allow-no-subscriptions"
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Compute/virtualMachines/extensions",
+      "apiVersion": "2024-07-01",
+      "name": "[concat(parameters('vmName'), '/EnableSSH')]",
+      "properties": {
+        "publisher": "Microsoft.OSTCExtensions",
+        "type": "LinuxDiagnostic",
+        "typeHandlerVersion": "3.0",
+        "autoUpgradeMinorVersion": true,
+        "settings": {
+          "EnableTcpForwarding": "true"
         }
       }
     },
@@ -436,5 +449,11 @@
         "principalType": "ServicePrincipal"
       }
     }
-  ]
+  ],
+  "outputs": {
+    "publicIP": {
+      "type": "string",
+      "value": "[reference(resourceId('Microsoft.Network/publicIPAddresses', concat(parameters('vmName'), '-pip')), '2024-05-01', 'Full').ipAddress]"
+    }
+  }
 }
