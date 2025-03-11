@@ -106,8 +106,13 @@ stages:
           scriptType: 'bash'
           scriptLocation: 'inlineScript'
           inlineScript: |
-            # Fetch the Object ID of the signed-in user (Azure DevOps agent)
-            OBJECT_ID=$(az ad signed-in-user show --query "id" -o tsv)
+            # Detect if running as Service Principal or User
+            if az account show --query "user.type" -o tsv | grep -q "servicePrincipal"; then
+              OBJECT_ID=$(az ad sp show --id $(az account show --query "user.name" -o tsv) --query "id" -o tsv)
+            else
+              OBJECT_ID=$(az ad signed-in-user show --query "id" -o tsv)
+            fi
+
             echo "Using Object ID: $OBJECT_ID"
 
             # Assign Key Vault secret get permission
