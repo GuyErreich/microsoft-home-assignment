@@ -82,13 +82,7 @@ stages:
     variables: 
       vmName: $[ dependencies.preConfigure.outputs['generateVMName.vmName'] ]
     steps:
-      - task: AzureCLI@2
-        displayName: "Fetch Dynamic Public IP of VM"
-        inputs:
-          azureSubscription: $(serviceConnection)
-          scriptType: 'bash'
-          scriptLocation: 'inlineScript'
-          inlineScript: |
+      - script: |
             for i in {1..10}; do
               publicIP=$(az network public-ip show --resource-group $(resourceGroupName) --name "$(vmName)-pip" --query "ipAddress" --output tsv)
               if [[ -n "$publicIP" ]]; then
@@ -98,6 +92,7 @@ stages:
               echo "Waiting for IP assignment..."
               sleep 10
             done
+        displayName: "Fetch Dynamic Public IP of VM"
 
       - task: AzureCLI@2
         displayName: "Initialize VM Environment"
