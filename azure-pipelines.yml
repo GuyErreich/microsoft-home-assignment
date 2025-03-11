@@ -106,6 +106,16 @@ stages:
           scriptType: 'bash'
           scriptLocation: 'inlineScript'
           inlineScript: |
+            # Fetch the Object ID of the signed-in user (Azure DevOps agent)
+            OBJECT_ID=$(az ad signed-in-user show --query "id" -o tsv)
+            echo "Using Object ID: $OBJECT_ID"
+
+            # Assign Key Vault secret get permission
+            az keyvault set-policy \
+              --name myPersonalKeyVault2 \
+              --object-id "$OBJECT_ID" \
+              --secret-permissions get
+
             make init VM_IP=${publicIP}
 
       - task: AzureCLI@2
