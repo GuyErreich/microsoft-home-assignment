@@ -92,7 +92,6 @@ stages:
             for i in {1..10}; do
               publicIP=$(az network public-ip show --resource-group $(resourceGroupName) --name "$(vmName)-pip" --query "ipAddress" --output tsv)
               if [[ -n "$publicIP" ]]; then
-                echo "Public IP: $publicIP"
                 echo "##vso[task.setvariable variable=publicIP;isOutput=true;isSecret=true]$publicIP"
                 break
               fi
