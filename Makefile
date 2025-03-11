@@ -3,11 +3,10 @@
 VAULT_NAME ?= myPersonalKeyVault2
 SSH_KEY ?= ~/.ssh/microsoft_test
 
-INIT_SCRIPT = \
-	"sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.6 1 && " \
-	"sudo update-alternatives --set python3 /usr/bin/python3.6 && " \
-	"sudo apt-get update && " \
-	"sudo apt install make"
+INIT_SCRIPT = sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.6 1 && \
+	sudo update-alternatives --set python3 /usr/bin/python3.6 && \
+	sudo apt-get update && \
+	sudo apt install -y make
 
 key:
 	az keyvault secret show --name mySSHKey --vault-name ${VAULT_NAME} --query value -o tsv > ~/.ssh/microsoft_test
