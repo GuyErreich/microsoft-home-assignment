@@ -14,7 +14,7 @@ key:
 	@if [ ! -f "${SSH_KEY}" ]; then \
 		echo "Fetching SSH key from Azure Key Vault..."; \
 		az keyvault secret show --name mySSHKey --vault-name ${VAULT_NAME} --query value -o tsv > ${SSH_KEY}; \
-		sudo chmod 600 ${SSH_KEY}; \
+		chmod 600 ${SSH_KEY}; \
 	else \
 		echo "SSH key already exists."; \
 	fi
