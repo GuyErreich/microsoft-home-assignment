@@ -367,24 +367,6 @@
       }
     },
     {
-      "type": "Microsoft.Compute/virtualMachines/extensions",
-      "apiVersion": "2024-07-01",
-      "name": "[concat(parameters('vmName'), '/EnableSSH')]",
-      "location": "[parameters('location')]",
-      "dependsOn": [
-        "[resourceId('Microsoft.Compute/virtualMachines', parameters('vmName'))]"
-      ],
-      "properties": {
-        "publisher": "Microsoft.OSTCExtensions",
-        "type": "LinuxDiagnostic",
-        "typeHandlerVersion": "3.0",
-        "autoUpgradeMinorVersion": true,
-        "settings": {
-          "EnableTcpForwarding": "true"
-        }
-      }
-    },
-    {
       "type": "Microsoft.Authorization/roleAssignments",
       "apiVersion": "2022-04-01",
       "name": "[guid(concat(subscription().subscriptionId, parameters('vmName'), '-StorageBlobDataContributorAssignment1'))]",
