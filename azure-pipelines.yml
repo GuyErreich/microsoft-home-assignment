@@ -99,9 +99,14 @@ stages:
             done
         displayName: "Fetch Dynamic Public IP of VM"
 
-      - script: |
-            make init VM_IP=${publicIP}"
+      - task: AzureCLI@2
         displayName: "Initialize VM Environment"
+        inputs:
+          azureSubscription: $(serviceConnection)
+          scriptType: 'bash'
+          scriptLocation: 'inlineScript'
+          inlineScript: |
+            make init VM_IP=${publicIP}
 
       - task: AzureCLI@2
         displayName: "Populate Storage Accounts"
