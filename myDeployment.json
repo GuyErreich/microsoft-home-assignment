@@ -139,6 +139,9 @@
       "dependsOn": [
         "[resourceId('Microsoft.Network/virtualNetworks', parameters('vnetName'))]"
       ],
+      "identity": {
+        "type": "SystemAssigned"
+      },
       "sku": {
         "name": "Standard_LRS"
       },
@@ -179,73 +182,16 @@
         }
       }
     },
-    // {
-    //   "type": "Microsoft.Network/privateEndpoints",
-    //   "apiVersion": "2024-05-01",
-    //   "name": "storage-private-endpoint-sa1",
-    //   "location": "[parameters('location')]",
-    //   "dependsOn": [
-    //     "[resourceId('Microsoft.Storage/storageAccounts', concat(parameters('storageAccountPrefix'), 'sa1'))]"
-    //   ],
-    //   "properties": {
-    //     "privateLinkServiceConnections": [
-    //       {
-    //         "name": "storage-private-link",
-    //         "properties": {
-    //           "privateLinkServiceId": "[resourceId('Microsoft.Storage/storageAccounts', concat(parameters('storageAccountPrefix'), 'sa1'))]",
-    //           "groupIds": ["blob"]
-    //         }
-    //       }
-    //     ],
-    //     "subnet": {
-    //       "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), 'default')]"
-    //     }
-    //   }
-    // },
-    // {
-    //   "type": "Microsoft.Network/privateEndpoints",
-    //   "apiVersion": "2024-05-01",
-    //   "name": "storage-private-endpoint-sa2",
-    //   "location": "[parameters('location')]",
-    //   "dependsOn": [
-    //     "[resourceId('Microsoft.Storage/storageAccounts', concat(parameters('storageAccountPrefix'), 'sa2'))]"
-    //   ],
-    //   "properties": {
-    //     "privateLinkServiceConnections": [
-    //       {
-    //         "name": "storage-private-link",
-    //         "properties": {
-    //           "privateLinkServiceId": "[resourceId('Microsoft.Storage/storageAccounts', concat(parameters('storageAccountPrefix'), 'sa2'))]",
-    //           "groupIds": ["blob"]
-    //         }
-    //       }
-    //     ],
-    //     "subnet": {
-    //       "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), 'default')]"
-    //     }
-    //   }
-    // },
-    // {
-    //   "type": "Microsoft.Network/privateDnsZones",
-    //   "apiVersion": "2024-06-01",
-    //   "name": "privatelink.blob.core.windows.net",
-    //   "location": "global",
-    //   "properties": {}
-    // },
-    // {
-    //   "type": "Microsoft.Network/privateDnsZones/virtualNetworkLinks",
-    //   "apiVersion": "2024-06-01",
-    //   "name": "[concat('privatelink.blob.core.windows.net/', parameters('vnetName'), '-dns-link')]",
-    //   "location": "global",
-    //   "dependsOn": [
-    //     "[resourceId('Microsoft.Network/privateDnsZones', 'privatelink.blob.core.windows.net')]"
-    //   ],
-    //   "properties": {
-    //     "virtualNetwork": {
-    //       "id": "[resourceId('Microsoft.Network/virtualNetworks', parameters('vnetName'))]"
-    //     }
-    //   }
-    // },
+    {
+      "type": "Microsoft.Authorization/roleAssignments",
+      "apiVersion": "2022-04-01",
+      "name": "[guid(concat(subscription().subscriptionId, concat(parameters('storageAccountPrefix'), 'sa1'), '-StorageBlobDataContributorAssignment'))]",
+      "properties": {
+        "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'ba92f5b4-2d11-453d-a403-e96b0029c9fe')]",
+        "principalId": "[reference(resourceId('Microsoft.Storage/storageAccounts', concat(parameters('storageAccountPrefix'), 'sa1')), '2023-05-01', 'full').identity.principalId]"
+      },
+      "scope": "[resourceId('Microsoft.Storage/storageAccounts', concat(parameters('storageAccountPrefix'), 'sa2'))]"
+    },
 
 
     // Define the Virtual Network and VM
