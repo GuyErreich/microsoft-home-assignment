@@ -76,11 +76,44 @@ stages:
 
   - job: initResources
     displayName: "Initialize Resources"
-    dependsOn: deployingResources
+    dependsOn: 
+      - preConfigure
+      - deployingResources
     variables: 
-      publicIP: $[ dependencies.deployingResources.outputs['deployARM.outputs.publicIP'] ]
+      vmName: $[ dependencies.preConfigure.outputs['generateVMName.vmName'] ]
     steps:
-      - script: |
-          echo "Public IP of VM: $(publicIP)"
-        displayName: "Update SSH Connection with Latest IP"
+      - task: AzureCLI@2
+        displayName: "Fetch Dynamic Public IP of VM"
+        inputs:
+          azureSubscription: $(serviceConnection)
+          scriptType: 'bash'
+          scriptLocation: 'inlineScript'
+          inlineScript: |
+            for i in {1..10}; do
+              publicIP=$(az network public-ip show --resource-group $(resourceGroupName) --name "$(vmName)-pip" --query "ipAddress" --output tsv)
+              if [[ -n "$publicIP" ]]; then
+                echo "Public IP: $publicIP"
+                echo "##vso[task.setvariable variable=publicIP;isOutput=true;isSecret=true]$publicIP"
+                break
+              fi
+              echo "Waiting for IP assignment..."
+              sleep 10
+            done
 
+      - task: AzureCLI@2
+        displayName: "Initialize VM Environment"
+        inputs:
+          azureSubscription: $(serviceConnection)
+          scriptType: 'bash'
+          scriptLocation: 'inlineScript'
+          inlineScript: |
+            make init VM_IP=${publicIP}"
+
+      - task: AzureCLI@2
+        displayName: "Populate Storage Accounts"
+        inputs:
+          azureSubscription: $(serviceConnection)
+          scriptType: 'bash'
+          scriptLocation: 'inlineScript'
+          inlineScript: |
+            make run VM_IP=${publicIP} COMMAND='make init'"

@@ -435,11 +435,5 @@
         "principalType": "ServicePrincipal"
       }
     }
-  ],
-  "outputs": {
-    "publicIP": {
-      "type": "string",
-      "value": "[reference(resourceId('Microsoft.Network/publicIPAddresses', concat(parameters('vmName'), '-pip')), '2024-05-01', 'Full').properties.ipAddress]"
-    }
-  }
+  ]
 }
