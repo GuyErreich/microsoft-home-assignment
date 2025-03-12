@@ -98,12 +98,6 @@ stages:
         overrideParameters: '-keyVaultName "$(keyVaultName)" -adminObjectID "$(adminObjectID)" -sshPrivateKey "$(sshPrivateKey)" -sshPublicKey "$(sshPublicKey)" -vmName "$(vmName)"'
         useWithoutJSON: true
         deploymentOutputs: 'deploymentOutputs'
-        
-    
-    - script: |
-        echo "Deployment Outputs: $(deploymentOutputs)"
-        echo "Deployment Outputs: $(deploymentOutputs.vmName.value)"
-      displayName: "test"
 
     - task: AzureResourceManagerTemplateDeployment@3
       displayName: "Deploy Monitors"

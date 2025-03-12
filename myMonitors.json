@@ -65,7 +65,7 @@
         "severity": 3,
         "enabled": true,
         "evaluationFrequency": "PT5M",
-        "windowSize": "PT15M",
+        "windowSize": "PT1H",
         "scopes": [
           "[resourceId('Microsoft.Compute/virtualMachines', parameters('vmName'))]"
         ],
@@ -109,7 +109,7 @@
         "severity": 3,
         "enabled": true,
         "evaluationFrequency": "PT5M",
-        "windowSize": "PT15M",
+        "windowSize": "PT1H",
         "scopes": [
           "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccount1'))]"
         ],
@@ -153,7 +153,7 @@
         "severity": 3,
         "enabled": true,
         "evaluationFrequency": "PT5M",
-        "windowSize": "PT15M",
+        "windowSize": "PT1H",
         "scopes": [
           "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccount2'))]"
         ],
