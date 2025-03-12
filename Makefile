@@ -11,9 +11,9 @@ STORAGE_B ?= mynewstoragesa2
 CONTAINER_NAME ?= my_container
 NUM_OF_BLOBS ?= 100
 
-INIT_SCRIPT = curl -sSL -O https://packages.microsoft.com/config/$(. /etc/os-release && echo ${ID})/$(. /etc/os-release && echo ${VERSION_ID})/packages-microsoft-prod.deb \
-				sudo dpkg -i packages-microsoft-prod.deb \
-				rm packages-microsoft-prod.deb \
+INIT_SCRIPT = curl -sSL -O https://packages.microsoft.com/config/$(. /etc/os-release && echo ${ID})/$(. /etc/os-release && echo ${VERSION_ID})/packages-microsoft-prod.deb && \
+				sudo dpkg -i packages-microsoft-prod.deb && \
+				rm packages-microsoft-prod.deb && \
 				sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.6 1 && \
 				sudo update-alternatives --set python3 /usr/bin/python3.6 && \
 				sudo apt-get update && \
@@ -23,9 +23,9 @@ INIT_SCRIPT = curl -sSL -O https://packages.microsoft.com/config/$(. /etc/os-rel
 					python3.8-venv \
 					python3.8-dev \
 					python3-pip \
-				sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.8 2 \
-				sudo update-alternatives --set python3 /usr/bin/python3.8 \
-				python3 -m pip install --upgrade pip \
+				sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.8 2 && \
+				sudo update-alternatives --set python3 /usr/bin/python3.8 && \
+				python3 -m pip install --upgrade pip && \
 				python3 -m pip install --user azure-identity azure-mgmt-storage azure-storage-blob argparse
 
 key:
