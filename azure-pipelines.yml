@@ -117,7 +117,7 @@ stages:
         templateLocation: 'Linked artifact'
         csmFile: 'myMonitors.json'
         deploymentMode: 'Complete'
-        overrideParameters: '-vmName "$(deploy.outputs.vmName)" -storageAccount1 "$(deploy.outputs.storageName1)" -storageAccount2 "$(deploy.outputs.storageName2)" -adminEmail $(adminEmail)'
+        overrideParameters: '-vmName "$(deploymentOutputs.vmName.value)" -storageAccount1 "$(deploymentOutputs.storageName1.value)" -storageAccount2 "$(deploymentOutputs.storageName2.value)" -adminEmail $(adminEmail)'
 
   - job: initResources
     displayName: "Initialize Resources"
