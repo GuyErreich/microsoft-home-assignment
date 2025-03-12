@@ -1,35 +1,26 @@
-.PHONY: key copy connect check-env-%
+.PHONY: key copy init connect populate check-env-%
+
+WORKDIR = /home/$(VM_USER)
 
 VAULT_NAME ?= myPersonalKeyVault2
 SSH_KEY ?= ~/.ssh/microsoft_test
 SKIP_FINGERPRINT = -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null
-SCRIPT_FOLDER ?= ./server
+SCRIPT_FOLDER ?= server
 VM_USER = azureuser
 
 STORAGE_A ?= mynewstoragesa1
 STORAGE_B ?= mynewstoragesa2
-CONTAINER_NAME ?= my_container
+CONTAINER_NAME ?= my-container
 NUM_OF_BLOBS ?= 100
 
-
-OS_ID := $(shell . /etc/os-release && echo $$ID)
-OS_VERSION := $(shell . /etc/os-release && echo $$VERSION_ID)
-INIT_SCRIPT = curl -sSL -O https://packages.microsoft.com/config/$$(. /etc/os-release && echo $$ID)/$$(. /etc/os-release && echo $$VERSION_ID)/packages-microsoft-prod.deb && \
-				sudo dpkg -i packages-microsoft-prod.deb && \
-				rm packages-microsoft-prod.deb && \
-				sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.6 1 && \
-				sudo update-alternatives --set python3 /usr/bin/python3.6 && \
-				sudo apt-get update && \
-				sudo apt install -y \
-					make \
-					python3.8 \
-					python3.8-venv \
-					python3.8-dev \
-					python3-pip \
-				sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.8 2 && \
-				sudo update-alternatives --set python3 /usr/bin/python3.8 && \
-				python3 -m pip install --upgrade pip && \
-				python3 -m pip install --user azure-identity azure-mgmt-storage azure-storage-blob argparse
+VENV_PATH = $(WORKDIR)/.venv
+VENV_ACTIVATE = $(VENV_PATH)/bin/activate
+INIT_SCRIPT = 'sudo apt install -y python3.12-venv && \
+				python3 -m venv $(VENV_PATH) && \
+				source $(VENV_ACTIVATE) && \
+				pip install --upgrade pip && \
+				pip install azure-identity azure-storage-blob argparse'
+				
 
 key:
 	@if [ ! -f "$(SSH_KEY)" ]; then \
@@ -48,17 +39,16 @@ key:
 	fi
 
 copy: key check-env-VM_IP
-	scp $(SKIP_FINGERPRINT) -r -i $(SSH_KEY) $(SCRIPT_FOLDER) $(VM_USER)@$(VM_IP):/home/$(VM_USER)/
+	scp $(SKIP_FINGERPRINT) -r -i $(SSH_KEY) $(SCRIPT_FOLDER) $(VM_USER)@$(VM_IP):$(WORKDIR)
 
 init: copy check-env-VM_IP
-	ssh $(SKIP_FINGERPRINT) -i $(SSH_KEY) $(VM_USER)@$(VM_IP) "$(INIT_SCRIPT)"
+	ssh $(SKIP_FINGERPRINT) -i $(SSH_KEY) $(VM_USER)@$(VM_IP) $(INIT_SCRIPT)
 
 connect: check-env-VM_IP
 	ssh $(SKIP_FINGERPRINT) -i $(SSH_KEY) $(VM_USER)@$(VM_IP) $(CMD)
 
 populate:
-	make connect CMD="cd $(SCRIPT_FOLDER) && python3 ./blob_transfer.py --storage-a '$(STORAGE_A)' --storage-b '$(STORAGE_B)' --container '$(CONTAINER_NAME)' --num-blobs $(NUM_OF_BLOBS)"
-
+	make connect CMD='$(VENV_PATH)/bin/python $(WORKDIR)/$(SCRIPT_FOLDER)/blob_transfer.py --storage-a "$(STORAGE_A)" --storage-b "$(STORAGE_B)" --container "$(CONTAINER_NAME)" --num-blobs $(NUM_OF_BLOBS)'
 check-env-%:
 	@if [ -z "$($*)" ]; then \
 		echo "Error: $* is not set"; \
