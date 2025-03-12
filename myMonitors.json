@@ -4,7 +4,7 @@
   "parameters": {
     "location": {
       "type": "string",
-      "defaultValue": "East US",
+      "defaultValue": "global",
       "metadata": {
         "description": "Azure location for deployment"
       }
