@@ -95,12 +95,7 @@ stages:
         templateLocation: 'Linked artifact'
         csmFile: 'myDeployment.json'
         deploymentMode: 'Complete'
-        overrideParameters: |
-          -keyVaultName "$(keyVaultName)"
-          -adminObjectID "$(adminObjectID)"
-          -sshPrivateKey "$(sshPrivateKey)"
-          -sshPublicKey "$(sshPublicKey)"
-          -vmName "$(vmName)"
+        overrideParameters: '-keyVaultName "$(keyVaultName)" -adminObjectID "$(adminObjectID)" -sshPrivateKey "$(sshPrivateKey)" -sshPublicKey "$(sshPublicKey)" -vmName "$(vmName)"'
         deploymentOutputs: 'outputs'
     
     - script: |
@@ -120,11 +115,7 @@ stages:
         templateLocation: 'Linked artifact'
         csmFile: 'myMonitors.json'
         deploymentMode: 'Complete'
-        overrideParameters: |
-          -vmName "$(deploy.outputs.vmName)"
-          -storageAccount1 "$(deploy.outputs.storageName1)"
-          -storageAccount2 "$(deploy.outputs.storageName2)"
-          -adminEmail $(adminEmail)
+        overrideParameters: '-vmName "$(deploy.outputs.vmName)" -storageAccount1 "$(deploy.outputs.storageName1)" -storageAccount2 "$(deploy.outputs.storageName2)" -adminEmail $(adminEmail)'
 
   - job: initResources
     displayName: "Initialize Resources"
