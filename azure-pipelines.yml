@@ -119,7 +119,7 @@ stages:
             az keyvault set-policy \
               --name $(keyVaultName) \
               --object-id "$OBJECT_ID" \
-              --secret-permissions get}
+              --secret-permissions get
 
             make init VM_IP=$(publicIP)
 
