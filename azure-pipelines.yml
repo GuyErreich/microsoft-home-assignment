@@ -91,7 +91,7 @@ stages:
             for i in {1..10}; do
               publicIP=$(az network public-ip show --resource-group $(resourceGroupName) --name "$(vmName)-pip" --query "ipAddress" --output tsv)
               if [[ -n "$publicIP" ]]; then
-                echo "##vso[task.setvariable variable=publicIP;isOutput=true;isSecret=true]$publicIP"
+                echo "##vso[task.setvariable variable=publicIP;isSecret=true]$publicIP"
                 break
               fi
               echo "Waiting for IP assignment..."
@@ -121,7 +121,7 @@ stages:
               --object-id "$OBJECT_ID" \
               --secret-permissions get
 
-            make init VM_IP=${{ variables.publicIP }}
+            make init VM_IP=$(publicIP)
 
       - task: AzureCLI@2
         displayName: "Populate Storage Accounts"
