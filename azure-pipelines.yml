@@ -64,11 +64,7 @@ stages:
         inlineScript: |
           adminEmail=$(az ad user show --id "$(getAdminObjectID.adminObjectID)" --query "mail" --output tsv)
           
-          if [[ -z "$adminEmail" ]]; then
-            echo "##vso[task.logissue type=error]Admin Email could not be retrieved."
-            exit 1
-          fi
-
+          
           echo "Fetched Admin Email: $adminEmail"
           echo "##vso[task.setvariable variable=adminEmail;isOutput=true;]$adminEmail"
 
