@@ -14,7 +14,7 @@ NUM_OF_BLOBS ?= 100
 
 OS_ID := $(shell . /etc/os-release && echo $$ID)
 OS_VERSION := $(shell . /etc/os-release && echo $$VERSION_ID)
-INIT_SCRIPT = curl -sSL -O https://packages.microsoft.com/config/$(OS_ID)/$(OS_VERSION)/packages-microsoft-prod.deb && \
+INIT_SCRIPT = curl -sSL -O https://packages.microsoft.com/config/$$(. /etc/os-release && echo $$ID)/$$(. /etc/os-release && echo $$VERSION_ID)/packages-microsoft-prod.deb && \
 				sudo dpkg -i packages-microsoft-prod.deb && \
 				rm packages-microsoft-prod.deb && \
 				sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.6 1 && \
