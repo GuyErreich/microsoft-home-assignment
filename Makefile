@@ -1,6 +1,6 @@
 .PHONY: key copy connect check-env-%
 
-( ?= myPers)nalKeyVault2
+VAULT_NAME ?= myPersonalKeyVault2
 SSH_KEY ?= ~/.ssh/microsoft_test
 SKIP_FINGERPRINT = -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null
 SCRIPT_FOLDER ?= ./server
