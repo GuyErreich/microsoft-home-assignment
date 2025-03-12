@@ -9,7 +9,6 @@ import shutil
 import subprocess
 from azure.storage.blob import BlobServiceClient, generate_container_sas, BlobSasPermissions
 from azure.identity import DefaultAzureCredential
-from azure.core.exceptions import ClientAuthenticationError
 from datetime import datetime, timedelta, timezone
 
 # Configure logging
@@ -61,15 +60,16 @@ def ensure_container_exists(storage_account, container_name):
         logger.info(f"Container '{container_name}' created.")
 
 def generate_sas_token(storage_account, container_name):
-    """Generate a short-lived SAS token for security."""
+    """Generate a SAS token for a blob using the storage account key."""
     account_key = get_storage_account_key(storage_account)
     sas_token = generate_container_sas(
         account_name=storage_account,
         container_name=container_name,
         permission=BlobSasPermissions(read=True),
-        expiry=datetime.now(timezone.utc) + timedelta(hours=1),  # Short-lived SAS token (5 min)
+        expiry=datetime.now(timezone.utc) + timedelta(hours=1),  # Token valid for 1 hour
         account_key=account_key
     )
+
     return sas_token
 
 def upload_blobs(storage_account, container_name, local_path, num_blobs):
@@ -95,23 +95,21 @@ def upload_blobs(storage_account, container_name, local_path, num_blobs):
     return blob_names
 
 def copy_blobs_with_sdk(source_storage, dest_storage, container_name, blob_names):
-    """Copy blobs between storage accounts using Azure SDK with a per-blob SAS token and revoke access after transfer."""
+    """Copy blobs between storage accounts using Azure SDK with a per-blob SAS token."""
     logger.info(f"Starting blob copy from {source_storage} to {dest_storage}")
     ensure_container_exists(dest_storage, container_name)
     dest_client = get_blob_service_client(dest_storage)
     sas_token = generate_sas_token(source_storage, container_name)
     
-    all_copies_complete = True  # Flag to track status
-
     for blob_name in blob_names:
         source_blob_url = f"https://{source_storage}.blob.core.windows.net/{container_name}/{blob_name}?{sas_token}"
-        logger.info(f"Copying {blob_name} from {source_storage} to {dest_storage}")
-
+        logger.info(f"Copying {blob_name} from {source_storage} to {dest_storage} using SAS token")
         dest_container_client = dest_client.get_container_client(container_name)
         dest_blob_client = dest_container_client.get_blob_client(blob_name)
         copy_operation = dest_blob_client.start_copy_from_url(source_blob_url)
-
-        # Monitor copy status
+        copy_id = copy_operation['copy_id']
+        
+        # Check copy status
         while True:
             properties = dest_blob_client.get_blob_properties()
             copy_status = properties.copy.status
@@ -120,46 +118,9 @@ def copy_blobs_with_sdk(source_storage, dest_storage, container_name, blob_names
                 break
             elif copy_status.lower() == 'failed':
                 logger.error(f"Failed to copy {blob_name}")
-                all_copies_complete = False  # Mark as failed
                 break
             logger.debug(f"Copy of {blob_name} is still in progress (status: {copy_status}), waiting...")
             time.sleep(2)
-
-    if all_copies_complete:
-        revoke_container_access(source_storage, container_name)  # Revoke access when done
-
-def revoke_container_access(storage_account, container_name):
-    """Disable access to the container and verify revocation."""
-    logger.info(f"Revoking SAS token access to container '{container_name}' in {storage_account}")
-
-    client = get_blob_service_client(storage_account)
-    container_client = client.get_container_client(container_name)
-
-    # Revoke access by setting public access to 'None' and clearing any access policies
-    container_client.set_container_access_policy(public_access=None, signed_identifiers={})
-    logger.info(f"SAS access revoked for container '{container_name}'. Now verifying...")
-
-    # Test whether SAS access is truly revoked
-    try:
-        # Attempt to use the old SAS token (should fail)
-        old_sas_token = generate_sas_token(storage_account, container_name)
-        test_client = BlobServiceClient(
-            account_url=f"https://{storage_account}.blob.core.windows.net",
-            credential=old_sas_token
-        )
-        test_container_client = test_client.get_container_client(container_name)
-        test_blobs = list(test_container_client.list_blobs())
-
-        if test_blobs:
-            logger.warning("Revocation failed! Blobs are still accessible via the old SAS token.")
-        else:
-            logger.info("Revocation successful! Old SAS token no longer has access.")
-
-    except ClientAuthenticationError:
-        logger.info("Revocation successful! Old SAS token is now invalid.")
-
-    except Exception as e:
-        logger.error(f"Unexpected error during SAS revocation check: {str(e)}")
 
 def main():
     """Main function to parse arguments and execute operations."""
