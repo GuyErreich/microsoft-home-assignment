@@ -4,7 +4,7 @@
   "parameters": {
     "location": {
       "type": "string",
-      "defaultValue": "global",
+      "defaultValue": "East US",
       "metadata": {
         "description": "Azure location for deployment"
       }
@@ -56,7 +56,10 @@
       "type": "Microsoft.Insights/metricAlerts",
       "apiVersion": "2018-03-01",
       "name": "vmCpuHighAlert",
-      "location": "[parameters('location')]",
+      "location": "global",
+      "dependsOn": [
+        "[resourceId('Microsoft.Insights/actionGroups', 'monitoringActionGroup')]"
+      ],
       "properties": {
         "description": "Alert for high CPU usage on the virtual machine.",
         "severity": 3,
@@ -97,7 +100,10 @@
       "type": "Microsoft.Insights/metricAlerts",
       "apiVersion": "2018-03-01",
       "name": "storageCapacityAlert1",
-      "location": "[parameters('location')]",
+      "location": "global",
+      "dependsOn": [
+        "[resourceId('Microsoft.Insights/actionGroups', 'monitoringActionGroup')]"
+      ],
       "properties": {
         "description": "Alert when storage utilization exceeds 500GB on Storage Account 1.",
         "severity": 3,
@@ -138,7 +144,10 @@
       "type": "Microsoft.Insights/metricAlerts",
       "apiVersion": "2018-03-01",
       "name": "storageCapacityAlert2",
-      "location": "[parameters('location')]",
+      "location": "global",
+      "dependsOn": [
+        "[resourceId('Microsoft.Insights/actionGroups', 'monitoringActionGroup')]"
+      ],
       "properties": {
         "description": "Alert when storage utilization exceeds 500GB on Storage Account 2.",
         "severity": 3,
