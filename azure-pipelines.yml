@@ -69,7 +69,7 @@ stages:
       sshPublicKey: $[ dependencies.preConfigure.outputs['generateKey.sshPublicKey'] ]
       adminObjectID: $[ dependencies.preConfigure.outputs['getAdminObjectID.adminObjectID'] ]
       vmName: $[ dependencies.preConfigure.outputs['generateVMName.vmName'] ]
-      adminEmail: $[ dependencies.preConfigure.outputs[getAdminEmail.adminEmail] ]
+      adminEmail: $[ dependencies.preConfigure.outputs['getAdminEmail.adminEmail'] ]
     steps:
     - task: AzureResourceManagerTemplateDeployment@3
       displayName: "Deploy"
