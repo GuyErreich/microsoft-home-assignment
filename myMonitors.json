@@ -1,0 +1,179 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "location": {
+      "type": "string",
+      "defaultValue": "East US",
+      "metadata": {
+        "description": "Azure location for deployment"
+      }
+    },
+    "vmName": {
+      "type": "string",
+      "metadata": {
+        "description": "Virtual Machine name"
+      }
+    },
+    "storageAccount1": {
+      "type": "string",
+      "metadata": {
+        "description": "First Storage Account name"
+      }
+    },
+    "storageAccount2": {
+      "type": "string",
+      "metadata": {
+        "description": "Second Storage Account name"
+      }
+    },
+    "adminEmail": {
+      "type": "string",
+      "metadata": {
+        "description": "Email for alert notifications"
+      }
+    }
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Insights/actionGroups",
+      "apiVersion": "2023-01-01",
+      "name": "monitoringActionGroup",
+      "location": "[parameters('location')]",
+      "properties": {
+        "groupShortName": "AlertsGrp",
+        "enabled": true,
+        "emailReceivers": [
+          {
+            "name": "AdminNotification",
+            "emailAddress": "[parameters('adminEmail')]",
+            "useCommonAlertSchema": true
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.Insights/metricAlerts",
+      "apiVersion": "2018-03-01",
+      "name": "vmCpuHighAlert",
+      "location": "[parameters('location')]",
+      "properties": {
+        "description": "Alert for high CPU usage on the virtual machine.",
+        "severity": 3,
+        "enabled": true,
+        "evaluationFrequency": "PT5M",
+        "windowSize": "PT15M",
+        "scopes": [
+          "[resourceId('Microsoft.Compute/virtualMachines', parameters('vmName'))]"
+        ],
+        "criteria": {
+          "odata.type": "Microsoft.Azure.Monitor.SingleResourceMultipleMetricCriteria",
+          "allOf": [
+            {
+              "criterionType": "StaticThresholdCriterion",
+              "name": "High CPU Usage",
+              "metricNamespace": "Microsoft.Compute/virtualMachines",
+              "metricName": "Percentage CPU",
+              "dimensions": [],
+              "operator": "GreaterThan",
+              "threshold": 80,
+              "timeAggregation": "Average",
+              "failingPeriods": {
+                "numberOfEvaluationPeriods": 3,
+                "minFailingPeriodsToAlert": 2
+              }
+            }
+          ]
+        },
+        "actions": [
+          {
+            "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups', 'monitoringActionGroup')]"
+          }
+        ],
+        "autoMitigate": false
+      }
+    },
+    {
+      "type": "Microsoft.Insights/metricAlerts",
+      "apiVersion": "2018-03-01",
+      "name": "storageCapacityAlert1",
+      "location": "[parameters('location')]",
+      "properties": {
+        "description": "Alert when storage utilization exceeds 500GB on Storage Account 1.",
+        "severity": 3,
+        "enabled": true,
+        "evaluationFrequency": "PT5M",
+        "windowSize": "PT15M",
+        "scopes": [
+          "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccount1'))]"
+        ],
+        "criteria": {
+          "odata.type": "Microsoft.Azure.Monitor.SingleResourceMultipleMetricCriteria",
+          "allOf": [
+            {
+              "criterionType": "StaticThresholdCriterion",
+              "name": "High Storage Utilization",
+              "metricNamespace": "Microsoft.Storage/storageAccounts",
+              "metricName": "UsedCapacity",
+              "dimensions": [],
+              "operator": "GreaterThan",
+              "threshold": 500000000000,
+              "timeAggregation": "Average",
+              "failingPeriods": {
+                "numberOfEvaluationPeriods": 3,
+                "minFailingPeriodsToAlert": 2
+              }
+            }
+          ]
+        },
+        "actions": [
+          {
+            "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups', 'monitoringActionGroup')]"
+          }
+        ],
+        "autoMitigate": false
+      }
+    },
+    {
+      "type": "Microsoft.Insights/metricAlerts",
+      "apiVersion": "2018-03-01",
+      "name": "storageCapacityAlert2",
+      "location": "[parameters('location')]",
+      "properties": {
+        "description": "Alert when storage utilization exceeds 500GB on Storage Account 2.",
+        "severity": 3,
+        "enabled": true,
+        "evaluationFrequency": "PT5M",
+        "windowSize": "PT15M",
+        "scopes": [
+          "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccount2'))]"
+        ],
+        "criteria": {
+          "odata.type": "Microsoft.Azure.Monitor.SingleResourceMultipleMetricCriteria",
+          "allOf": [
+            {
+              "criterionType": "StaticThresholdCriterion",
+              "name": "High Storage Utilization",
+              "metricNamespace": "Microsoft.Storage/storageAccounts",
+              "metricName": "UsedCapacity",
+              "dimensions": [],
+              "operator": "GreaterThan",
+              "threshold": 500000000000,
+              "timeAggregation": "Average",
+              "failingPeriods": {
+                "numberOfEvaluationPeriods": 3,
+                "minFailingPeriodsToAlert": 2
+              }
+            }
+          ]
+        },
+        "actions": [
+          {
+            "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups', 'monitoringActionGroup')]"
+          }
+        ],
+        "autoMitigate": false
+      }
+    }
+  ]
+}

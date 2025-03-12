@@ -49,6 +49,18 @@ stages:
       displayName: "Generate VM Name"
       name: generateVMName
 
+    - task: AzureCLI@2
+      displayName: "Fetch Admin Email"
+      name: getAdminEmail
+      inputs:
+        azureSubscription: $(serviceConnection)
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+          adminEmail=$(az ad user show --id "$(vaultAdmin)" --query "mail" --output tsv)
+          echo "Fetched Admin Email: $adminEmail"
+          echo "##vso[task.setvariable variable=adminEmail;isOutput=true;isSecret=true]$adminEmail"
+
   - job: deployingResources
     displayName: "Deploy Resources"
     dependsOn: preConfigure
@@ -57,10 +69,11 @@ stages:
       sshPublicKey: $[ dependencies.preConfigure.outputs['generateKey.sshPublicKey'] ]
       adminObjectID: $[ dependencies.preConfigure.outputs['getAdminObjectID.adminObjectID'] ]
       vmName: $[ dependencies.preConfigure.outputs['generateVMName.vmName'] ]
+      adminEmail: $[ dependencies.preConfigure.outputs[getAdminEmail.adminEmail] ]
     steps:
     - task: AzureResourceManagerTemplateDeployment@3
-      displayName: "Deploy ARM"
-      name: deployARM
+      displayName: "Deploy"
+      name: deploy
       inputs:
         deploymentScope: 'Resource Group'
         azureResourceManagerConnection: $(serviceConnection)
@@ -73,6 +86,20 @@ stages:
         deploymentMode: 'Complete'
         overrideParameters: '-keyVaultName "$(keyVaultName)" -adminObjectID "$(adminObjectID)" -sshPrivateKey "$(sshPrivateKey)" -sshPublicKey "$(sshPublicKey)" -vmName "$(vmName)"'
         deploymentOutputs: 'outputs'
+    
+    - task: AzureResourceManagerTemplateDeployment@3
+      displayName: "Deploy Monitors"
+      inputs:
+        deploymentScope: 'Resource Group'
+        azureResourceManagerConnection: $(serviceConnection)
+        subscriptionId: $(subscriptionId)
+        action: 'Create Or Update Resource Group'
+        resourceGroupName: $(resourceGroupName)
+        location: $(location)
+        templateLocation: 'Linked artifact'
+        csmFile: 'myMonitors.json'
+        deploymentMode: 'Complete'
+        overrideParameters: '-vmName "$(setOutput.outputs.vmName)" -storageAccount1 "$(setOutput.outputs.storageName1)" -storageAccount2 "$(setOutput.outputs.storageName2)" -adminEmail $(adminEmail)'
 
   - job: initResources
     displayName: "Initialize Resources"

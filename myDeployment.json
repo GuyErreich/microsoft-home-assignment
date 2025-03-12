@@ -63,7 +63,7 @@
     },
     "location": {
       "type": "string",
-      "defaultValue": "eastus",
+      "defaultValue": "East US",
       "metadata": {
         "description": "Azure region where the VM will be deployed."
       }
@@ -435,5 +435,19 @@
         "principalType": "ServicePrincipal"
       }
     }
-  ]
+  ],
+  "outputs": {
+    "vmName": {
+      "type": "string",
+      "value": "[parameters('vmName')]"
+    },
+    "storageName1": {
+      "type": "string",
+      "value": "[concat(parameters('storageAccountPrefix'), 'sa1')]"
+    },
+    "storageName2": {
+      "type": "string",
+      "value": "[concat(parameters('storageAccountPrefix'), 'sa2')]"
+    }
+  }
 }
