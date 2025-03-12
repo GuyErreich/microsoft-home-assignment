@@ -45,7 +45,7 @@ stages:
             exit 1
           fi
 
-          echo "##vso[task.setvariable variable=adminObjectID;isOutput=true;]$userId"
+          echo "##vso[task.setvariable variable=adminObjectID;isOutput=true;isSecret=true]$userId"
   
     - script: |
         vmName=$(echo "myLinuxVM$(date +"%d-%m-%Y-%H-%M-%S")")
@@ -62,10 +62,13 @@ stages:
         scriptType: 'bash'
         scriptLocation: 'inlineScript'
         inlineScript: |
-          echo "Retrieving Admin Email using ID: $(getAdminObjectID.adminObjectID)"
           adminEmail=$(az ad user show --id "$(getAdminObjectID.adminObjectID)" --query "mail" --output tsv)
           
-          
+          if [[ -z "$adminEmail" ]]; then
+            echo "##vso[task.logissue type=error]Admin Email could not be retrieved."
+            exit 1
+          fi
+
           echo "Fetched Admin Email: $adminEmail"
           echo "##vso[task.setvariable variable=adminEmail;isOutput=true;]$adminEmail"
 
