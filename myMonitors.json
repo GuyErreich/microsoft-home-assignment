@@ -9,6 +9,12 @@
         "description": "Azure location for deployment"
       }
     },
+    "resourceGroup": {
+      "type": "string",
+      "metadata": {
+        "description": "The resource group where the monitored resources are"
+      }
+    },
     "vmName": {
       "type": "string",
       "metadata": {
@@ -62,7 +68,7 @@
                 "metadata": {
                   "inputs": [
                     { "name": "resourceType", "value": "microsoft.compute/virtualmachines" },
-                    { "name": "resourceId", "value": "[resourceId('Microsoft.Compute/virtualMachines', parameters('vmName'))]" },
+                    { "name": "resourceId", "value": "[resourceId(parameters('resourceGroup'), 'Microsoft.Compute/virtualMachines', parameters('vmName'))]" },
                     { "name": "metric", "value": "Percentage CPU" }
                   ],
                   "type": "Extension/HubsExtension/PartType/MarkdownPart"
@@ -73,7 +79,7 @@
                 "metadata": {
                   "inputs": [
                     { "name": "resourceType", "value": "microsoft.storage/storageaccounts" },
-                    { "name": "resourceId", "value": "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccount1'))]" },
+                    { "name": "resourceId", "value": "[resourceId(parameters('resourceGroup'), 'Microsoft.Storage/storageAccounts', parameters('storageAccount1'))]" },
                     { "name": "metric", "value": "UsedCapacity" }
                   ],
                   "type": "Extension/HubsExtension/PartType/MarkdownPart"
@@ -84,7 +90,7 @@
                 "metadata": {
                   "inputs": [
                     { "name": "resourceType", "value": "microsoft.storage/storageaccounts" },
-                    { "name": "resourceId", "value": "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccount2'))]" },
+                    { "name": "resourceId", "value": "[resourceId(parameters('resourceGroup'), 'Microsoft.Storage/storageAccounts', parameters('storageAccount2'))]" },
                     { "name": "metric", "value": "UsedCapacity" }
                   ],
                   "type": "Extension/HubsExtension/PartType/MarkdownPart"
@@ -184,7 +190,7 @@
         "evaluationFrequency": "PT5M",
         "windowSize": "PT1H",
         "scopes": [
-          "[resourceId('Microsoft.Compute/virtualMachines', parameters('vmName'))]"
+          "[resourceId(parameters('resourceGroup'), 'Microsoft.Compute/virtualMachines', parameters('vmName'))]"
         ],
         "criteria": {
           "odata.type": "Microsoft.Azure.Monitor.SingleResourceMultipleMetricCriteria",
@@ -228,7 +234,7 @@
         "evaluationFrequency": "PT5M",
         "windowSize": "PT1H",
         "scopes": [
-          "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccount1'))]"
+          "[resourceId(parameters('resourceGroup'), 'Microsoft.Storage/storageAccounts', parameters('storageAccount1'))]"
         ],
         "criteria": {
           "odata.type": "Microsoft.Azure.Monitor.SingleResourceMultipleMetricCriteria",
@@ -272,7 +278,7 @@
         "evaluationFrequency": "PT5M",
         "windowSize": "PT1H",
         "scopes": [
-          "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccount2'))]"
+          "[resourceId(parameters('resourceGroup'), 'Microsoft.Storage/storageAccounts', parameters('storageAccount2'))]"
         ],
         "criteria": {
           "odata.type": "Microsoft.Azure.Monitor.SingleResourceMultipleMetricCriteria",
