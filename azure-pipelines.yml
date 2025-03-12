@@ -56,7 +56,7 @@ stages:
         scriptType: 'bash'
         scriptLocation: 'inlineScript'
         inlineScript: |
-          adminEmail=$(az ad user show --id "$(setOutput.adminObjectID)" --query "mail" --output tsv)
+          adminEmail=$(az ad user show --id "$(adminObjectID)" --query "mail" --output tsv)
           echo "Fetched Admin Email: $adminEmail"
           echo "##vso[task.setvariable variable=adminEmail;isOutput=true;isSecret=true]$adminEmail"
 
