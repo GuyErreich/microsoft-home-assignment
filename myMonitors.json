@@ -153,9 +153,7 @@
             },
             "sharedTimeRange": true
           }
-        },
-        "name": "[parameters('dashboardName')]",
-        "type": "Microsoft.Portal/dashboards"
+        }
       }
     },
     {
