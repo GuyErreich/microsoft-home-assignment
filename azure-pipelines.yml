@@ -102,7 +102,7 @@ stages:
     
     - script: |
         echo "Deployment Outputs: $(deploymentOutputs)"
-        echo "Deployment Outputs: $(deploy.deploymentOutputs)"
+        echo "Deployment Outputs: $(deploymentOutputs.vmName.value)"
       displayName: "test"
 
     - task: AzureResourceManagerTemplateDeployment@3
