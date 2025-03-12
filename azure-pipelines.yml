@@ -106,7 +106,7 @@ stages:
         azureResourceManagerConnection: $(serviceConnection)
         subscriptionId: $(subscriptionId)
         action: 'Create Or Update Resource Group'
-        resourceGroupName: $(resourceGroupName)
+        resourceGroupName: 'myMonitors'
         location: 'East US'
         templateLocation: 'Linked artifact'
         csmFile: 'myMonitors.json'
