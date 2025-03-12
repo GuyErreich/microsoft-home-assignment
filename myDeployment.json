@@ -332,7 +332,7 @@
           "imageReference": {
             "publisher": "Canonical",
             "offer": "UbuntuServer",
-            "sku": "18_04-lts-gen2",
+            "sku": "server",
             "version": "latest"
           },
           "osDisk": {
@@ -362,7 +362,7 @@
         "typeHandlerVersion": "2.0",
         "autoUpgradeMinorVersion": true,
         "settings": {
-          "commandToExecute": "sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.6 1 && sudo update-alternatives --set python3 /usr/bin/python3.6 && sudo apt-get update && sudo apt install make && curl -sL https://aka.ms/InstallAzureCLIDeb | bash && az login --identity --allow-no-subscriptions"
+          "commandToExecute": "sudo apt-get update && sudo apt install make && curl -sL https://aka.ms/InstallAzureCLIDeb | bash && az login --identity --allow-no-subscriptions"
         }
       }
     },
