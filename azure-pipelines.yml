@@ -121,7 +121,7 @@ stages:
               --object-id "$OBJECT_ID" \
               --secret-permissions get
 
-            make init VM_IP=$(publicIP)
+            make init VM_IP=${{ variables.publicIP }}
 
       - task: AzureCLI@2
         displayName: "Populate Storage Accounts"
