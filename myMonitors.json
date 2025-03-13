@@ -48,114 +48,112 @@
     }
   },
   "resources": [
-    {
-      "type": "Microsoft.Portal/dashboards",
-      "apiVersion": "2015-08-01-preview",
-      "name": "[parameters('dashboardName')]",
-      "location": "[parameters('location')]",
-      "dependsOn": [
-        "[resourceId('Microsoft.Insights/metricAlerts', 'vmCpuHighAlert')]",
-        "[resourceId('Microsoft.Insights/metricAlerts', 'storageCapacityAlert1')]",
-        "[resourceId('Microsoft.Insights/metricAlerts', 'storageCapacityAlert2')]"
-      ],
-      "properties": {
-        "lenses": {
-          "0": {
-            "order": 0,
-            "parts": {
-              "0": { 
-                "position": { "x": 0, "y": 0, "colSpan": 6, "rowSpan": 4 },
-                "metadata": {
-                  "inputs": [
-                    { "name": "resourceType", "value": "microsoft.compute/virtualmachines" },
-                    { "name": "resourceId", "value": "[resourceId(parameters('resourceGroup'), 'Microsoft.Compute/virtualMachines', parameters('vmName'))]" },
-                    { "name": "metric", "value": "Percentage CPU" }
-                  ],
-                  "type": "Microsoft.Portal/Charts"
-                }
-              },
-              "1": {
-                "position": { "x": 6, "y": 0, "colSpan": 6, "rowSpan": 4 },
-                "metadata": {
-                  "inputs": [
-                    { "name": "resourceType", "value": "microsoft.storage/storageaccounts" },
-                    { "name": "resourceId", "value": "[resourceId(parameters('resourceGroup'), 'Microsoft.Storage/storageAccounts', parameters('storageAccount1'))]" },
-                    { "name": "metric", "value": "UsedCapacity" }
-                  ],
-                  "type": "Microsoft.Portal/Charts"
-                }
-              },
-              "2": {
-                "position": { "x": 0, "y": 4, "colSpan": 6, "rowSpan": 4 },
-                "metadata": {
-                  "inputs": [
-                    { "name": "resourceType", "value": "microsoft.storage/storageaccounts" },
-                    { "name": "resourceId", "value": "[resourceId(parameters('resourceGroup'), 'Microsoft.Storage/storageAccounts', parameters('storageAccount2'))]" },
-                    { "name": "metric", "value": "UsedCapacity" }
-                  ],
-                  "type": "Microsoft.Portal/Charts"
-                }
-              },
-              "3": {
-                "position": { "x": 6, "y": 4, "colSpan": 6, "rowSpan": 4 },
-                "metadata": {
-                  "inputs": [
-                    { "name": "resourceType", "value": "microsoft.insights/metricalerts" },
-                    { "name": "resourceId", "value": "[resourceId('Microsoft.Insights/metricAlerts', 'vmCpuHighAlert')]" }
-                  ],
-                  "type": "Microsoft.Portal/AlertsSummary"
-                }
-              },
-              "4": {
-                "position": { "x": 0, "y": 8, "colSpan": 6, "rowSpan": 4 },
-                "metadata": {
-                  "inputs": [
-                    { "name": "resourceType", "value": "microsoft.insights/metricalerts" },
-                    { "name": "resourceId", "value": "[resourceId('Microsoft.Insights/metricAlerts', 'storageCapacityAlert1')]" }
-                  ],
-                  "type": "Microsoft.Portal/AlertsSummary"
-                }
-              },
-              "5": {
-                "position": { "x": 6, "y": 8, "colSpan": 6, "rowSpan": 4 },
-                "metadata": {
-                  "inputs": [
-                    { "name": "resourceType", "value": "microsoft.insights/metricalerts" },
-                    { "name": "resourceId", "value": "[resourceId('Microsoft.Insights/metricAlerts', 'storageCapacityAlert2')]" }
-                  ],
-                  "type": "Microsoft.Portal/AlertsSummary"
-                }
-              },
-              "6": {
-                "position": { "x": 0, "y": 12, "colSpan": 12, "rowSpan": 4 },
-                "metadata": {
-                  "inputs": [
-                    { "name": "resourceType", "value": "microsoft.insights/metricalerts" }
-                  ],
-                  "type": "Microsoft.Portal/AlertsSummary"
-                }
-              }
-            }
-          }
-        },
-        "metadata": {
-          "model": {
-            "timeRange": {
-              "value": "Past24Hours",
-              "type": "MsPortalFx.Composition.Configuration.ValueTypes.TimeRange"
-            },
-            "filter": {
-              "value": {
-                "filters": [],
-                "version": 1
-              },
-              "type": "MsPortalFx.Composition.Configuration.ValueTypes.ListPane"
-            },
-            "sharedTimeRange": true
-          }
-        }
-      }
-    },
+    // TODO: Dashboard needs more work
+    // {
+    //   "type": "Microsoft.Portal/dashboards",
+    //   "apiVersion": "2022-12-01-preview",
+    //   "name": "[parameters('dashboardName')]",
+    //   "location": "[parameters('location')]",
+    //   "properties": {
+    //     "lenses": [
+    //       {
+    //         "order": 0,
+    //         "parts": [
+    //           {
+    //             "position": { "x": 0, "y": 0, "colSpan": 6, "rowSpan": 4 },
+    //             "metadata": {
+    //               "type": "Extension/HubsExtension/PartType/MarkdownPart",
+    //               "settings": {
+    //                 "content": {
+    //                   "settings": {
+    //                     "title": "CPU Usage",
+    //                     "subtitle": "Live CPU Monitoring",
+    //                     "content": "**Virtual Machine:** [parameters('vmName')]  \n**CPU Usage:** See [Azure Monitor](https://portal.azure.com/#view/Microsoft_Azure_Monitoring/ChartV2Blade/resourceId/[resourceId(parameters('resourceGroup'), 'Microsoft.Compute/virtualMachines', parameters('vmName'))])"
+    //                   }
+    //                 }
+    //               }
+    //             }
+    //           },
+    //           {
+    //             "position": { "x": 6, "y": 0, "colSpan": 6, "rowSpan": 4 },
+    //             "metadata": {
+    //               "type": "Extension/HubsExtension/PartType/MarkdownPart",
+    //               "settings": {
+    //                 "content": {
+    //                   "settings": {
+    //                     "title": "Storage Account 1 Usage",
+    //                     "subtitle": "Storage Utilization",
+    //                     "content": "**Storage Account:** [parameters('storageAccount1')]  \n**Used Capacity:** See [Azure Monitor](https://portal.azure.com/#view/Microsoft_Azure_Monitoring/ChartV2Blade/resourceId/[resourceId(parameters('resourceGroup'), 'Microsoft.Storage/storageAccounts', parameters('storageAccount1'))])"
+    //                   }
+    //                 }
+    //               }
+    //             }
+    //           },
+    //           {
+    //             "position": { "x": 0, "y": 4, "colSpan": 6, "rowSpan": 4 },
+    //             "metadata": {
+    //               "type": "Extension/HubsExtension/PartType/MarkdownPart",
+    //               "settings": {
+    //                 "content": {
+    //                   "settings": {
+    //                     "title": "Storage Account 2 Usage",
+    //                     "subtitle": "Storage Utilization",
+    //                     "content": "**Storage Account:** [parameters('storageAccount2')]  \n**Used Capacity:** See [Azure Monitor](https://portal.azure.com/#view/Microsoft_Azure_Monitoring/ChartV2Blade/resourceId/[resourceId(parameters('resourceGroup'), 'Microsoft.Storage/storageAccounts', parameters('storageAccount2'))])"
+    //                   }
+    //                 }
+    //               }
+    //             }
+    //           },
+    //           {
+    //             "position": { "x": 6, "y": 4, "colSpan": 6, "rowSpan": 4 },
+    //             "metadata": {
+    //               "type": "Extension/HubsExtension/PartType/MarkdownPart",
+    //               "settings": {
+    //                 "content": {
+    //                   "settings": {
+    //                     "title": "CPU High Alert",
+    //                     "subtitle": "Triggered Alerts",
+    //                     "content": "**CPU Alert:** [vmCpuHighAlert]  \n**Check Details:** [Azure Alerts](https://portal.azure.com/#view/Microsoft_Azure_Monitoring/AlertsManagementSummaryBlade/resourceId/[resourceId(parameters('resourceGroup'), 'Microsoft.Insights/metricAlerts', 'vmCpuHighAlert')])"
+    //                   }
+    //                 }
+    //               }
+    //             }
+    //           },
+    //           {
+    //             "position": { "x": 0, "y": 8, "colSpan": 6, "rowSpan": 4 },
+    //             "metadata": {
+    //               "type": "Extension/HubsExtension/PartType/MarkdownPart",
+    //               "settings": {
+    //                 "content": {
+    //                   "settings": {
+    //                     "title": "Storage Alert (SA1)",
+    //                     "subtitle": "Triggered Alerts",
+    //                     "content": "**Storage Alert:** [storageCapacityAlert1]  \n**Check Details:** [Azure Alerts](https://portal.azure.com/#view/Microsoft_Azure_Monitoring/AlertsManagementSummaryBlade/resourceId/[resourceId(parameters('resourceGroup'), 'Microsoft.Insights/metricAlerts', 'storageCapacityAlert1')])"
+    //                   }
+    //                 }
+    //               }
+    //             }
+    //           },
+    //           {
+    //             "position": { "x": 6, "y": 8, "colSpan": 6, "rowSpan": 4 },
+    //             "metadata": {
+    //               "type": "Extension/HubsExtension/PartType/MarkdownPart",
+    //               "settings": {
+    //                 "content": {
+    //                   "settings": {
+    //                     "title": "Storage Alert (SA2)",
+    //                     "subtitle": "Triggered Alerts",
+    //                     "content": "**Storage Alert:** [storageCapacityAlert2]  \n**Check Details:** [Azure Alerts](https://portal.azure.com/#view/Microsoft_Azure_Monitoring/AlertsManagementSummaryBlade/resourceId/[resourceId(parameters('resourceGroup'), 'Microsoft.Insights/metricAlerts', 'storageCapacityAlert2')])"
+    //                   }
+    //                 }
+    //               }
+    //             }
+    //           }
+    //         ]
+    //       }
+    //     ]
+    //   }
+    // },
     {
       "type": "Microsoft.Insights/actionGroups",
       "apiVersion": "2023-01-01",
